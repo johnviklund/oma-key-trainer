@@ -2,51 +2,193 @@
   {
     "id": "open-terminal",
     "keys": "SUPER + RETURN",
-    "description": "Terminal"
+    "description": "Terminal",
+    "action": "Terminal"
   },
   {
     "id": "omarchy-menu",
     "keys": "SUPER + SPACE",
-    "description": "Omarchy menu"
+    "description": "Omarchy menu",
+    "action": "Omarchy menu"
   },
   {
     "id": "close-window",
     "keys": "SUPER + W",
-    "description": "Close window"
+    "description": "Close window",
+    "action": "Close window"
   },
   {
     "id": "toggle-window-split",
     "keys": "SUPER + J",
-    "description": "Toggle window split"
+    "description": "Toggle window split",
+    "action": "Toggle window split"
   },
   {
     "id": "toggle-window-floating-tiling",
     "keys": "SUPER + T",
-    "description": "Toggle window floating/tiling"
+    "description": "Toggle window floating/tiling",
+    "action": "Toggle window floating/tiling"
   },
   {
     "id": "full-screen",
     "keys": "SUPER + F",
-    "description": "Full screen"
+    "description": "Full screen",
+    "action": "Full screen"
   },
   {
     "id": "focus-left-window",
     "keys": "SUPER + LEFT",
-    "description": "Focus on left window"
+    "description": "Focus on left window",
+    "action": "Focus on left window"
   },
   {
     "id": "focus-right-window",
     "keys": "SUPER + RIGHT",
-    "description": "Focus on right window"
+    "description": "Focus on right window",
+    "action": "Focus on right window"
   },
   {
     "id": "focus-above-window",
     "keys": "SUPER + UP",
-    "description": "Focus on above window"
+    "description": "Focus on above window",
+    "action": "Focus on above window"
   },
   {
     "id": "focus-below-window",
     "keys": "SUPER + DOWN",
-    "description": "Focus on below window"
+    "description": "Focus on below window",
+    "action": "Focus on below window"
+  },
+  {
+    "id": "pseudo-window",
+    "keys": "SUPER + P",
+    "description": "Pseudo window",
+    "action": "Pseudo window"
+  },
+  {
+    "id": "tiled-full-screen",
+    "keys": "SUPER + CTRL + F",
+    "description": "Tiled full screen",
+    "action": "Tiled full screen"
+  },
+  {
+    "id": "full-width",
+    "keys": "SUPER + ALT + F",
+    "description": "Full width",
+    "action": "Full width"
+  },
+  {
+    "id": "pop-window-out",
+    "keys": "SUPER + O",
+    "description": "Pop window out (float & pin)",
+    "action": "Pop window out (float & pin)"
+  },
+  {
+    "id": "toggle-workspace-layout",
+    "keys": "SUPER + L",
+    "description": "Toggle workspace layout",
+    "action": "Toggle workspace layout"
+  },
+  {
+    "id": "switch-to-workspace-1",
+    "keys": "SUPER + 1",
+    "description": "Switch to workspace 1",
+    "action": "Switch to workspace 1"
+  },
+  {
+    "id": "move-window-to-workspace-1",
+    "keys": "SUPER + SHIFT + 1",
+    "description": "Move window to workspace 1",
+    "action": "Move window to workspace 1"
+  },
+  {
+    "id": "toggle-scratchpad",
+    "keys": "SUPER + S",
+    "description": "Toggle scratchpad",
+    "action": "Toggle scratchpad"
+  },
+  {
+    "id": "next-workspace",
+    "keys": "SUPER + TAB",
+    "description": "Next workspace",
+    "action": "Next workspace"
+  },
+  {
+    "id": "previous-workspace",
+    "keys": "SUPER + SHIFT + TAB",
+    "description": "Previous workspace",
+    "action": "Previous workspace"
+  },
+  {
+    "id": "former-workspace",
+    "keys": "SUPER + CTRL + TAB",
+    "description": "Former workspace",
+    "action": "Former workspace"
+  },
+  {
+    "id": "apps-menu",
+    "keys": "SUPER + ALT + SPACE",
+    "description": "Apps menu",
+    "action": "Apps menu"
+  },
+  {
+    "id": "keybindings",
+    "keys": "SUPER + K",
+    "description": "Keybindings",
+    "action": "Keybindings"
+  },
+  {
+    "id": "background-switcher",
+    "keys": "SUPER + CTRL + SPACE",
+    "description": "Background switcher",
+    "action": "Background switcher"
+  },
+  {
+    "id": "screenshot",
+    "keys": "PRINT",
+    "description": "Screenshot",
+    "action": "Screenshot"
+  },
+  {
+    "id": "lock-system",
+    "keys": "SUPER + CTRL + L",
+    "description": "Lock system",
+    "action": "Lock system"
+  },
+  {
+    "id": "volume-up",
+    "keys": "XF86AudioRaiseVolume",
+    "description": "Volume up",
+    "action": "Volume up"
+  },
+  {
+    "id": "volume-down",
+    "keys": "XF86AudioLowerVolume",
+    "description": "Volume down",
+    "action": "Volume down"
+  },
+  {
+    "id": "mute",
+    "keys": "XF86AudioMute",
+    "description": "Mute",
+    "action": "Mute"
+  },
+  {
+    "id": "universal-copy",
+    "keys": "SUPER + C",
+    "description": "Universal copy",
+    "action": "Universal copy"
+  },
+  {
+    "id": "universal-paste",
+    "keys": "SUPER + V",
+    "description": "Universal paste",
+    "action": "Universal paste"
+  },
+  {
+    "id": "clipboard-manager",
+    "keys": "SUPER + CTRL + V",
+    "description": "Clipboard manager",
+    "action": "Clipboard manager"
   }
 ]
