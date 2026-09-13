@@ -6,13 +6,13 @@ Status: complete
 
 ## Execution state
 
-- Current: re-planned 2026-09-13 — old Steps 5+6 merged into Step 5 (F9); Steps 1–4 unchanged and done
-- Next: Step 5 (`manifest.json` + `UsageService.qml` land together)
-- Writer: OpenAI · GPT-5 (self-declared, Steps 1–4)
-- Baseline: `omarchy plugin validate .` exit 1 until Step 5 lands (F9); shell IPC exit 0; plugin present/enabled (`kinds: ["bar-widget"]` live)
+- Current: Step 5 complete and committed
+- Next: Step 6 (`BarWidget.qml` service injection and refresh)
+- Writer: OpenAI · GPT-5 (self-declared, Steps 1–5)
+- Baseline: `omarchy plugin validate .` exit 0; `IpcHandler` count 1; live IPC `{"pool":32,"complete":0,"allLearned":false}`
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold)`, `allLearned(rows)`; counts contract v1; threshold 10
-- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8
-- Uncommitted: `manifest.json` (the Step 5 edit, already applied — commit it with `UsageService.qml`)
+- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63
+- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 5 checkpoint)
 - Pending decision: none
 
 ## Findings
@@ -49,9 +49,10 @@ Status: complete
   - Check: `node -e "eval(require('fs').readFileSync('UsageModel.js','utf8')); var r=visibleEntries([{id:'a',action:'A'},{id:'b',action:'B'}],{A:10,B:3},10); console.log(r.map(function(x){return x.id+':'+x.count+':'+x.complete}).join(' '), allLearned(r))"` — expect `b:3:false a:10:true false` (pre: ENOENT, exit 1)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 5 — `manifest.json` (already edited: `kinds` += `"service"`, `"keepLoaded": true`, `entryPoints.service = "UsageService.qml"`, version 0.2.0) + new `UsageService.qml`, committed together: `Item` root with `property var shell`, `property var manifest`; `FileView` on `keybindings.json` (pool, moved out of `KeyTrainer.qml`); `FileView` on counts.json plus a `FileView { path: <state dir>; watchChanges: true; onFileChanged: countsFile.reload() }`; `visibleEntries` ListModel + `allLearned` rebuilt via `UsageModel.js` whenever either file loads; `refresh()` (`reload()` both files); `IpcHandler { target: "oma-key-trainer" }` with `status(): string` returning `{pool, complete, allLearned}` JSON (F5, F6, F9, F10, F11)
+- [x] Step 5 — `manifest.json` (already edited: `kinds` += `"service"`, `"keepLoaded": true`, `entryPoints.service = "UsageService.qml"`, version 0.2.0) + new `UsageService.qml`, committed together: `Item` root with `property var shell`, `property var manifest`; `FileView` on `keybindings.json` (pool, moved out of `KeyTrainer.qml`); `FileView` on counts.json plus a `FileView { path: <state dir>; watchChanges: true; onFileChanged: countsFile.reload() }`; `visibleEntries` ListModel + `allLearned` rebuilt via `UsageModel.js` whenever either file loads; `refresh()` (`reload()` both files); `IpcHandler { target: "oma-key-trainer" }` with `status(): string` returning `{pool, complete, allLearned}` JSON (F5, F6, F9, F10, F11)
   - Check: `omarchy plugin validate . && grep -o 'IpcHandler' UsageService.qml | wc -l && omarchy-shell shell rescanPlugins && sleep 2 && omarchy-shell oma-key-trainer status` — expect validate exit 0, `1`, then a JSON line with `"pool":32` (pre: `entry point file not found: 'UsageService.qml'`, exit 1; `omarchy-shell oma-key-trainer status` alone: `Target not found.`, exit 1)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 6 — `BarWidget.qml`: `readonly property var usageService: bar?.shell?.serviceFor("oma-key-trainer") ?? null`, injected into the loaded `KeyTrainer` alongside `shell`; `open()` calls `usageService.refresh()` first (F6, F10, decision 3a)
   - Check: `grep -o 'serviceFor' BarWidget.qml | wc -l` — expect `1` (pre: `0`)
   - Skills: none
@@ -82,6 +83,7 @@ Status: complete
 ## Deviations
 
 - Old Step 5's check failed after its prescribed edit: `omarchy plugin validate .` reported `entry point file not found: 'UsageService.qml'` — resolved by this re-plan (F9): merged into the new Step 5.
+- Step 5's first IPC attempt was blocked by the executor sandbox (`omarchy-shell is not running`); the required rescan and status check then passed against the active desktop session with elevated sandbox access.
 
 ## TODO impacts
 
