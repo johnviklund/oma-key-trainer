@@ -15,3 +15,18 @@ new bindings as you master the current ones.
 | [WORKLOG.md](WORKLOG.md) | Rolling pointer into git history |
 
 Built with the `workflow` skill (brainstorm → plan → execute → review → wrap).
+
+## Install
+
+```sh
+omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable
+```
+
+Add this row to `~/.config/omarchy/extensions/omarchy-menu.jsonc` to make the
+trainer available from the Learn menu:
+
+```jsonc
+{
+  "learn.keybindings-trainer": {"icon":"󰧑","label":"Keybindings Trainer","action":"omarchy-shell shell toggle oma-key-trainer '{}'"},
+}
+```
