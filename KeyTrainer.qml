@@ -1,5 +1,4 @@
 import Quickshell
-import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
 import qs.Commons
@@ -11,6 +10,7 @@ Item {
   property string omarchyPath: Quickshell.env("OMARCHY_PATH")
   property var shell: null
   property var manifest: null
+  property var usageService: null
   property bool opened: false
 
   property color background: Color.menu.background
@@ -23,10 +23,13 @@ Item {
   property int contentSpacing: Style.spacing.md
   property int rowHeight: Math.max(Style.space(42), Style.font.body + Style.spacing.rowPaddingX * 2)
   property int keyColumnWidth: Style.space(180)
+  property int countColumnWidth: Style.space(84)
   readonly property int cardWidth: Math.min(Style.space(640), panel.width - Style.gapsOut * 2)
   readonly property int cardHeight: Math.min(Style.space(640), panel.height - Style.gapsOut * 2)
 
   function open(payloadJson) {
+    if (!root.usageService)
+      console.warn("oma-key-trainer: usage service unavailable")
     root.opened = true
     Qt.callLater(function() { keyCatcher.forceActiveFocus() })
   }
@@ -39,35 +42,6 @@ Item {
     root.close()
     if (root.shell && typeof root.shell.hide === "function")
       root.shell.hide((root.manifest && root.manifest.id) || "oma-key-trainer")
-  }
-
-  function loadKeybindings(raw) {
-    var entries = []
-    try {
-      entries = JSON.parse(raw)
-    } catch (error) {
-      entries = []
-    }
-
-    keybindingsModel.clear()
-    for (var i = 0; i < entries.length; i++) {
-      var entry = entries[i]
-      keybindingsModel.append({
-        id: String(entry.id || ""),
-        keys: String(entry.keys || ""),
-        description: String(entry.description || "")
-      })
-    }
-  }
-
-  ListModel {
-    id: keybindingsModel
-  }
-
-  FileView {
-    path: Qt.resolvedUrl("keybindings.json").toString().replace(/^file:\/\//, "")
-    watchChanges: false
-    onLoaded: root.loadKeybindings(text())
   }
 
   PanelWindow {
@@ -143,11 +117,38 @@ Item {
           foreground: root.foreground
         }
 
+        Text {
+          width: parent.width
+          height: Math.max(0, parent.height - hero.implicitHeight - separator.height - parent.spacing * 2)
+          visible: !root.usageService
+          text: "Usage tracking is unavailable. Reload the plugin and try again."
+          color: root.foreground
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.body
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+          wrapMode: Text.WordWrap
+        }
+
+        Text {
+          width: parent.width
+          height: Math.max(0, parent.height - hero.implicitHeight - separator.height - parent.spacing * 2)
+          visible: root.usageService && root.usageService.allLearned === true
+          text: "All keybindings learned"
+          color: root.foreground
+          font.family: root.fontFamily
+          font.pixelSize: Style.font.body
+          font.bold: true
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
+        }
+
         ListView {
           id: keybindingList
           width: parent.width
           height: Math.max(0, parent.height - hero.implicitHeight - separator.height - parent.spacing * 2)
-          model: keybindingsModel
+          visible: root.usageService && root.usageService.allLearned !== true
+          model: root.usageService ? root.usageService.visibleEntries : null
           clip: true
           spacing: Style.space(4)
           boundsBehavior: Flickable.StopAtBounds
@@ -155,9 +156,12 @@ Item {
           delegate: Item {
             required property string keys
             required property string description
+            required property int count
+            required property bool complete
 
             width: ListView.view.width
             height: root.rowHeight
+            opacity: complete ? 0.55 : 1.0
 
             Row {
               anchors.fill: parent
@@ -175,13 +179,24 @@ Item {
               }
 
               Text {
-                width: parent.width - root.keyColumnWidth - parent.spacing
+                width: parent.width - root.keyColumnWidth - root.countColumnWidth - parent.spacing * 2
                 anchors.verticalCenter: parent.verticalCenter
                 text: description
                 color: root.foreground
                 font.family: root.fontFamily
                 font.pixelSize: Style.font.body
                 elide: Text.ElideRight
+              }
+
+              Text {
+                width: root.countColumnWidth
+                anchors.verticalCenter: parent.verticalCenter
+                text: complete ? "Complete" : count + "/10"
+                color: root.foreground
+                font.family: root.fontFamily
+                font.pixelSize: Style.font.body
+                font.bold: complete
+                horizontalAlignment: Text.AlignRight
               }
             }
           }
