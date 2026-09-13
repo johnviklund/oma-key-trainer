@@ -14,6 +14,7 @@ Item {
   readonly property string stateDir: home + "/.local/state/omarchy/oma-key-trainer"
   readonly property string countsPath: stateDir + "/counts.json"
   readonly property int completionThreshold: 10
+  readonly property int visibleWindowSize: 10
   readonly property var visibleEntries: visibleEntriesModel
 
   property var poolEntries: []
@@ -36,7 +37,7 @@ Item {
   }
 
   function rebuild() {
-    var rows = UsageModel.visibleEntries(root.poolEntries, root.counts, root.completionThreshold)
+    var rows = UsageModel.visibleEntries(root.poolEntries, root.counts, root.completionThreshold, root.visibleWindowSize)
     visibleEntriesModel.clear()
     for (var i = 0; i < rows.length; i += 1) {
       visibleEntriesModel.append(rows[i])
@@ -55,7 +56,8 @@ Item {
       if (visibleEntriesModel.get(i).complete) complete += 1
     }
     return JSON.stringify({
-      pool: visibleEntriesModel.count,
+      pool: root.poolEntries.length,
+      visible: visibleEntriesModel.count,
       complete: complete,
       allLearned: root.allLearned
     })

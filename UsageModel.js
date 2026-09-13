@@ -27,11 +27,17 @@ function parseCounts(raw) {
   }
 }
 
-function visibleEntries(pool, counts, threshold) {
-  var incomplete = [];
-  var complete = [];
+function visibleEntries(pool, counts, threshold, windowSize) {
+  var rows = [];
   var source = Array.isArray(pool) ? pool : [];
   var usage = counts || {};
+  var targetWindow = Number(windowSize);
+
+  if (!isFinite(targetWindow) || targetWindow < 1) {
+    targetWindow = source.length;
+  } else {
+    targetWindow = Math.floor(targetWindow);
+  }
 
   for (var index = 0; index < source.length; index += 1) {
     var entry = source[index];
@@ -46,14 +52,36 @@ function visibleEntries(pool, counts, threshold) {
       complete: count >= threshold,
     };
 
-    if (row.complete) {
-      complete.push(row);
-    } else {
-      incomplete.push(row);
+    rows.push(row);
+  }
+
+  var windowEnd = rows.length;
+  var incompleteCount = 0;
+  for (var i = 0; i < rows.length; i += 1) {
+    if (!rows[i].complete) {
+      incompleteCount += 1;
+    }
+    if (incompleteCount >= targetWindow) {
+      windowEnd = i + 1;
+      break;
     }
   }
 
-  return incomplete.concat(complete);
+  var pulled = [];
+  var initial = [];
+  var complete = [];
+  for (var rowIndex = 0; rowIndex < windowEnd; rowIndex += 1) {
+    var visibleRow = rows[rowIndex];
+    if (visibleRow.complete) {
+      complete.push(visibleRow);
+    } else if (rowIndex >= targetWindow) {
+      pulled.unshift(visibleRow);
+    } else {
+      initial.push(visibleRow);
+    }
+  }
+
+  return pulled.concat(initial, complete);
 }
 
 function allLearned(rows) {
