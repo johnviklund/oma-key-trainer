@@ -6,12 +6,12 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 2 — install and prove the hook live
-- Next: edit `README.md`, then wait for human opt-in/reload/key press before checking
+- Current: Step 3 — curate and validate the expanded binding pool
+- Next: edit `keybindings.json`, validate every action against live Hyprland binds
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` exit 0; shell IPC exit 0; plugin present/enabled
 - In flight: counts contract v1 at `~/.local/state/omarchy/oma-key-trainer/counts.json`; `o.bind(keys, description, dispatcher, options)` wrapped
-- Step commits: Step 1 @ 2ee15bb
+- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc
 - Uncommitted: this execution-state receipt
 - Pending decision: none
 
@@ -34,9 +34,10 @@ Status: complete
   - Check: `luac -p hook.lua && grep -o 'o.bind' hook.lua | wc -l` (pre: `cannot open hook.lua`, exit 1)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 2 — Install + prove the hook live: `README.md` documents the one-line opt-in `require("default.hypr.require_optional").module("omarchy.plugins.oma-key-trainer.hook")` placed before `require("default.hypr.omarchy")` in `~/.config/hypr/hyprland.lua`; the human adds it, runs `hyprctl reload && hyprctl configerrors` (empty), presses SUPER+W once (F3)
+- [x] Step 2 — Install + prove the hook live: `README.md` documents the one-line opt-in `require("default.hypr.require_optional").module("omarchy.plugins.oma-key-trainer.hook")` placed before `require("default.hypr.omarchy")` in `~/.config/hypr/hyprland.lua`; the human adds it, runs `hyprctl reload && hyprctl configerrors` (empty), presses SUPER+W once (F3)
   - Check: `test -s ~/.local/state/omarchy/oma-key-trainer/counts.json && grep -o '"Close window"' ~/.local/state/omarchy/oma-key-trainer/counts.json | wc -l` (pre: exit 1)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 3 — `keybindings.json`: add `"action"` (Omarchy description) to the 10 rows; extend the pool to ~30 entries in authored order from `$OMARCHY_PATH/default/hypr/bindings/*.lua` (tiling first, then utilities/media/clipboard); every action must be a live bind description (F4)
   - Check: `python3 -c "import json,subprocess; pool=json.load(open('keybindings.json')); descs={b.get('description','') for b in json.loads(subprocess.check_output(['hyprctl','binds','-j']))}-{''}; missing=[e['id'] for e in pool if e.get('action','') not in descs]; print(len(pool), 'entries;', len(missing), 'unmatched:', missing)"` — expect ≥ 30 entries, 0 unmatched (pre: `10 entries; 10 unmatched`)
   - Skills: none
