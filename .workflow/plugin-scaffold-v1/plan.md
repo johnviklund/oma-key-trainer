@@ -4,6 +4,16 @@ Base: f2c5365164d19fe59e51a72c0125925906167f49
 Inputs: brainstorm.md @ 94d4abe2e2c74ea2d1761ded064c42f4a6bdc8a5
 Status: complete
 
+## Execution state
+
+- Current: Step 2 — scaffold manifest and overlay lifecycle.
+- Step 1 @ efeccd7
+- Writer: OpenAI · GPT-5 (self-declared)
+- Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
+- In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
+- Uncommitted: none.
+- Pending decision: none.
+
 Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution repo
 `https://github.com/johnviklund/oma-key-trainer`; menu row `learn.keybindings-trainer`, label
 "Keybindings Trainer".
@@ -24,7 +34,8 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
 
 ## Checklist
 
-- [ ] Step 1 — Author the curated pool `keybindings.json`: array of ~10 `{id, keys, description}`, author-ordered, combos/descriptions copied from the default bindings (F6, F7)
+- [x] Step 1 — Author the curated pool `keybindings.json`: array of ~10 `{id, keys, description}`, author-ordered, combos/descriptions copied from the default bindings (F6, F7)
+  - Writer: OpenAI · GPT-5
   - Check: `jq -e 'length >= 8 and length <= 12 and all(.[]; has("id") and has("keys") and has("description"))' keybindings.json` (pre: exit 2 — file missing)
   - Skills: none
 - [ ] Step 2 — Scaffold `manifest.json` (id `oma-key-trainer`, name "Keybindings Trainer", version 0.1.0, homepage/repository = GitHub URL, `kinds: ["overlay"]`, `entryPoints.overlay: "KeyTrainer.qml"`, no `keepLoaded`) and the overlay lifecycle in `KeyTrainer.qml`: `opened`/`open()`/`close()`/`dismiss()`, injected `shell`/`manifest`/`omarchyPath`, fullscreen `PanelWindow` (Overlay layer, exclusive keyboard focus) with `Color.menu.scrim`, centered `BorderSurface` card, Escape and click-outside dismiss (F1, F2, F4, F9)
