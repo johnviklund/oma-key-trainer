@@ -6,13 +6,13 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 5 complete and committed
-- Next: Step 6 (`BarWidget.qml` service injection and refresh)
-- Writer: OpenAI · GPT-5 (self-declared, Steps 1–5)
+- Current: Step 6 complete and committed
+- Next: Step 7 (`KeyTrainer.qml` tracked-progress UI)
+- Writer: OpenAI · GPT-5 (self-declared, Steps 1–6)
 - Baseline: `omarchy plugin validate .` exit 0; `IpcHandler` count 1; live IPC `{"pool":32,"complete":0,"allLearned":false}`
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold)`, `allLearned(rows)`; counts contract v1; threshold 10
-- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63
-- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 5 checkpoint)
+- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546
+- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 6 checkpoint)
 - Pending decision: none
 
 ## Findings
@@ -53,9 +53,10 @@ Status: complete
   - Check: `omarchy plugin validate . && grep -o 'IpcHandler' UsageService.qml | wc -l && omarchy-shell shell rescanPlugins && sleep 2 && omarchy-shell oma-key-trainer status` — expect validate exit 0, `1`, then a JSON line with `"pool":32` (pre: `entry point file not found: 'UsageService.qml'`, exit 1; `omarchy-shell oma-key-trainer status` alone: `Target not found.`, exit 1)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 6 — `BarWidget.qml`: `readonly property var usageService: bar?.shell?.serviceFor("oma-key-trainer") ?? null`, injected into the loaded `KeyTrainer` alongside `shell`; `open()` calls `usageService.refresh()` first (F6, F10, decision 3a)
+- [x] Step 6 — `BarWidget.qml`: `readonly property var usageService: bar?.shell?.serviceFor("oma-key-trainer") ?? null`, injected into the loaded `KeyTrainer` alongside `shell`; `open()` calls `usageService.refresh()` first (F6, F10, decision 3a)
   - Check: `grep -o 'serviceFor' BarWidget.qml | wc -l` — expect `1` (pre: `0`)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 7 — `KeyTrainer.qml`: render `usageService.visibleEntries` — count column (`n/10`), fixed "Complete" marker + dimmed row for complete entries, all-learned message in place of the list; drop the local `FileView`/`keybindingsModel`; warn on missing service instead of an empty card (F8; TODO C1-2 tag-along)
   - Check: `grep -o 'usageService' KeyTrainer.qml | wc -l; grep -o 'FileView' KeyTrainer.qml | wc -l` — expect ≥ 3 and 0 (pre: `0`, `1`)
   - Skills: none
