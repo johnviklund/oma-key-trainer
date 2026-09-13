@@ -6,12 +6,12 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 3 — curate and validate the expanded binding pool
-- Next: edit `keybindings.json`, validate every action against live Hyprland binds
+- Current: Step 4 — implement pure usage-model helpers
+- Next: create `UsageModel.js`, then run its exact Node check
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` exit 0; shell IPC exit 0; plugin present/enabled
-- In flight: counts contract v1 at `~/.local/state/omarchy/oma-key-trainer/counts.json`; `o.bind(keys, description, dispatcher, options)` wrapped
-- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc
+- In flight: counts contract v1; pool has 32 rows keyed by exact Omarchy descriptions; completion threshold 10
+- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea
 - Uncommitted: this execution-state receipt
 - Pending decision: none
 
@@ -38,9 +38,10 @@ Status: complete
   - Check: `test -s ~/.local/state/omarchy/oma-key-trainer/counts.json && grep -o '"Close window"' ~/.local/state/omarchy/oma-key-trainer/counts.json | wc -l` (pre: exit 1)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 3 — `keybindings.json`: add `"action"` (Omarchy description) to the 10 rows; extend the pool to ~30 entries in authored order from `$OMARCHY_PATH/default/hypr/bindings/*.lua` (tiling first, then utilities/media/clipboard); every action must be a live bind description (F4)
+- [x] Step 3 — `keybindings.json`: add `"action"` (Omarchy description) to the 10 rows; extend the pool to ~30 entries in authored order from `$OMARCHY_PATH/default/hypr/bindings/*.lua` (tiling first, then utilities/media/clipboard); every action must be a live bind description (F4)
   - Check: `python3 -c "import json,subprocess; pool=json.load(open('keybindings.json')); descs={b.get('description','') for b in json.loads(subprocess.check_output(['hyprctl','binds','-j']))}-{''}; missing=[e['id'] for e in pool if e.get('action','') not in descs]; print(len(pool), 'entries;', len(missing), 'unmatched:', missing)"` — expect ≥ 30 entries, 0 unmatched (pre: `10 entries; 10 unmatched`)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 4 — `UsageModel.js`: pure helpers — `parseCounts(raw)` (tolerates empty/torn JSON → `{}`), `visibleEntries(pool, counts, threshold)` → rows `{id, keys, description, action, count, complete}` ordered incomplete-then-complete in authored order, `allLearned(rows)`; threshold 10 (F7)
   - Check: `node -e "eval(require('fs').readFileSync('UsageModel.js','utf8')); var r=visibleEntries([{id:'a',action:'A'},{id:'b',action:'B'}],{A:10,B:3},10); console.log(r.map(function(x){return x.id+':'+x.count+':'+x.complete}).join(' '), allLearned(r))"` — expect `b:3:false a:10:true false` (pre: ENOENT, exit 1)
   - Skills: none
