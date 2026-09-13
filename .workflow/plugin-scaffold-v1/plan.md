@@ -6,11 +6,12 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 5 — add the menu row and installation instructions.
+- Current: Step 6 — manual QA of the menu and overlay.
 - Step 1 @ efeccd7
 - Step 2 @ 345039d
 - Step 3 @ e62ef06
 - Step 4 @ f022de5
+- Step 5 @ 83164b9
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
 - In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
@@ -53,7 +54,8 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
   - Writer: OpenAI · GPT-5
   - Check: `omarchy-shell shell listPlugins | jq -e '.[] | select(.id=="oma-key-trainer") | .enabled'` (pre: exit 4 — not discovered → expect `true`)
   - Skills: none
-- [ ] Step 5 — Menu row: add `"learn.keybindings-trainer": {"icon":"󰧑","label":"Keybindings Trainer","action":"omarchy-shell shell toggle oma-key-trainer '{}'"}` to `~/.config/omarchy/extensions/omarchy-menu.jsonc`; add an "Install" section to `README.md` with `omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable` plus that exact snippet (F5)
+- [x] Step 5 — Menu row: add `"learn.keybindings-trainer": {"icon":"󰧑","label":"Keybindings Trainer","action":"omarchy-shell shell toggle oma-key-trainer '{}'"}` to `~/.config/omarchy/extensions/omarchy-menu.jsonc`; add an "Install" section to `README.md` with `omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable` plus that exact snippet (F5)
+  - Writer: OpenAI · GPT-5
   - Check: `grep -o '"learn.keybindings-trainer"' ~/.config/omarchy/extensions/omarchy-menu.jsonc | wc -l; grep -o 'learn.keybindings-trainer' README.md | wc -l` (pre: 0 / 0 → expect 1 / ≥ 1)
   - Skills: /home/johnviklund/.claude/skills/omarchy/SKILL.md
 - [ ] Step 6 — Manual QA (R1–R3): from the top-right menu, Learn → Keybindings Trainer opens the box with all pool rows; Escape and click-outside close it; theme colors match the menu; no `console.warn` for `oma-key-trainer` in the shell output. Paste what was seen (F8)
