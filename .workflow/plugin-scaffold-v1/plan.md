@@ -6,7 +6,7 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 3 — publish to GitHub; Steps 1–2 complete.
+- Current: Step 3 — publish blocked by GitHub authentication; Steps 1–2 complete.
 - Writer: OpenAI · GPT-5 (self-declared).
 - Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
 - QA automation: enabled `oma-key-trainer`; list shows `enabled=true`; summon/hide and toggle exit 0; pool has 10 rows.
@@ -14,7 +14,7 @@ Status: complete
 - Step 2 @ fa38a2b.
 - In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
 - Uncommitted: this execution receipt only.
-- Pending: publish `main` to the empty `johnviklund/oma-key-trainer` repository.
+- Pending: re-authenticate `gh` as `johnviklund`, then publish `main` to `johnviklund/oma-key-trainer`.
 
 Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
 ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
@@ -72,6 +72,7 @@ local folder to `~/Work/oma-key-trainer` last.
 ## Deviations
 
 - The sandbox cannot access the user session bus; outside it, `omarchy-shell` commands reach the running shell normally. QA completed through that session.
+- Step 3 preflight: `gh auth status` reports the active `johnviklund` token is invalid, so `gh auth setup-git` and the first push cannot proceed until an interactive `gh auth login -h github.com` succeeds.
 
 ## TODO impacts
 
