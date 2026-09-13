@@ -2,16 +2,19 @@
   "schemaVersion": 1,
   "id": "oma-key-trainer",
   "name": "Keybindings Trainer",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "author": "John Viklund",
   "description": "A curated reference for Omarchy keybindings",
   "homepage": "https://github.com/johnviklund/oma-key-trainer",
   "repository": "https://github.com/johnviklund/oma-key-trainer",
   "kinds": [
-    "bar-widget"
+    "bar-widget",
+    "service"
   ],
+  "keepLoaded": true,
   "entryPoints": {
-    "barWidget": "BarWidget.qml"
+    "barWidget": "BarWidget.qml",
+    "service": "UsageService.qml"
   },
   "barWidget": {
     "displayName": "Keybindings Trainer",
