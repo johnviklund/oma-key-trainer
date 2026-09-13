@@ -6,14 +6,15 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 2 — manual QA in progress; Step 1 complete.
+- Current: Step 3 — publish to GitHub; Steps 1–2 complete.
 - Writer: OpenAI · GPT-5 (self-declared).
 - Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
 - QA automation: enabled `oma-key-trainer`; list shows `enabled=true`; summon/hide and toggle exit 0; pool has 10 rows.
 - Step 1 @ 09a8f29.
+- Step 2 @ fa38a2b.
 - In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
 - Uncommitted: this execution receipt only.
-- Pending: visual observation — top-right placement/theme and Escape/click-outside dismissal — then Step 2 can close.
+- Pending: publish `main` to the empty `johnviklund/oma-key-trainer` repository.
 
 Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
 ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
@@ -41,9 +42,10 @@ local folder to `~/Work/oma-key-trainer` last.
   - Check: `git show HEAD:KeyTrainer.qml | grep -o 'anchors.rightMargin: Style.gapsOut' | wc -l` (pre: 0 → expect 1) paired guard: `git diff --quiet -- KeyTrainer.qml; echo $?` (pre: 1 → expect 0)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 2 — Manual QA (R1–R3) on the bar-widget shape: click the bar icon → card opens top-right under it with all 10 pool rows; Escape and click-outside close it; `omarchy-shell shell toggle oma-key-trainer '{}'` opens and closes it (menu-row path); colors match the current theme; no `console.warn` mentioning `oma-key-trainer` in the shell output. Paste what was seen into this file's execution state (F3)
+- [x] Step 2 — Manual QA (R1–R3) on the bar-widget shape: click the bar icon → card opens top-right under it with all 10 pool rows; Escape and click-outside close it; `omarchy-shell shell toggle oma-key-trainer '{}'` opens and closes it (menu-row path); colors match the current theme; no `console.warn` mentioning `oma-key-trainer` in the shell output. Observed pass: top-right placement, 10 rows, current-theme colors, Escape/click-outside dismissal, and menu-row toggle all worked; no warning observed.
   - Check: `omarchy-shell shell summon oma-key-trainer '{}'; omarchy-shell shell hide oma-key-trainer` (pre: `ok` / exit 0 — already runnable; the step's deliverable is the pasted observation, not a changed exit code)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 3 — Publish: `gh auth setup-git && git branch -m master main && git checkout main && git merge --ff-only fix/top-right-trainer-widget && git branch -d fix/top-right-trainer-widget && git remote add origin https://github.com/johnviklund/oma-key-trainer.git && git push -u origin main` (F6)
   - Check: `git rev-parse --abbrev-ref HEAD; git ls-remote --heads https://github.com/johnviklund/oma-key-trainer.git main | wc -l` (pre: `fix/top-right-trainer-widget` / 0 → expect `main` / 1)
   - Skills: none
@@ -69,7 +71,7 @@ local folder to `~/Work/oma-key-trainer` last.
 
 ## Deviations
 
-- The sandbox cannot access the user session bus; outside it, `omarchy-shell` commands reach the running shell normally. Visual QA remains unrecorded.
+- The sandbox cannot access the user session bus; outside it, `omarchy-shell` commands reach the running shell normally. QA completed through that session.
 
 ## TODO impacts
 
