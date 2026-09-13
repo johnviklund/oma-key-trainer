@@ -6,14 +6,14 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 5 — register the kept-loaded service in the manifest
-- Next: edit `manifest.json`, then validate the plugin schema
+- Current: Step 5 check failed — validator requires Step 6's `UsageService.qml`
+- Next: correct the Step 5/6 dependency before execution resumes
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` exit 0; shell IPC exit 0; plugin present/enabled
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold)`, `allLearned(rows)`; counts contract v1; threshold 10
 - Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8
-- Uncommitted: this execution-state receipt
-- Pending decision: none
+- Uncommitted: `manifest.json`, this execution-state receipt
+- Pending decision: re-audit remaining Steps 5–9 so manifest registration and service creation validate together
 
 ## Findings
 
@@ -78,6 +78,10 @@ Status: complete
 - Step 1 is the riskiest: it runs inside the compositor's Lua state on every keypress that hits a bind — an unhandled error there breaks the bind; the wrapped-bind-fires path is confirmed only at Step 2.
 - Outside its files: the user's `~/.config/hypr/hyprland.lua` gains a `require` (opt-in, `require_optional` so a removed plugin is harmless); an Omarchy update renaming a description silently stops counting that action.
 - Not taken: self-installing the hook from `~/.local/state/omarchy/toggles/hypr/` (needs a metatable proxy on `o`, a double reload, and leaves live code behind after uninstall).
+
+## Deviations
+
+- Step 5 check fails after its prescribed edit: `omarchy plugin validate .` reports `entry point file not found: 'UsageService.qml'`; Step 6 owns that file, so the remaining plan needs its dependency order corrected before execution continues.
 
 ## TODO impacts
 
