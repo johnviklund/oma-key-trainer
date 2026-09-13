@@ -6,16 +6,17 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 4 — rename the local folder and repoint the dev symlink; Steps 1–3 complete.
+- Current: all checklist steps complete; ready for Phase 4 review.
 - Writer: OpenAI · GPT-5 (self-declared).
 - Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
 - QA automation: enabled `oma-key-trainer`; list shows `enabled=true`; summon/hide and toggle exit 0; pool has 10 rows.
 - Step 1 @ 09a8f29.
 - Step 2 @ fa38a2b.
 - Step 3 @ 800ddb2.
+- Step 4 @ 30b0acb.
 - In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
 - Uncommitted: this execution receipt only.
-- Pending: move the repo to `/home/johnviklund/Work/oma-key-trainer`, repoint its dev symlink, and rescan the shell.
+- Pending: none.
 
 Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
 ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
@@ -51,9 +52,10 @@ local folder to `~/Work/oma-key-trainer` last.
   - Check: `git rev-parse --abbrev-ref HEAD; git ls-remote --heads https://github.com/johnviklund/oma-key-trainer.git main | wc -l` (pre: `fix/top-right-trainer-widget` / 0 → expect `main` / 1)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 4 — Rename the local folder and re-point the dev symlink, last: `mv ~/Work/plugin-keys-helper ~/Work/oma-key-trainer && ln -sfn ~/Work/oma-key-trainer ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins` — then reopen the session in `~/Work/oma-key-trainer` (F7)
+- [x] Step 4 — Rename the local folder and re-point the dev symlink, last: `mv ~/Work/plugin-keys-helper ~/Work/oma-key-trainer && ln -sfn ~/Work/oma-key-trainer ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins` — then reopen the session in `~/Work/oma-key-trainer` (F7)
   - Check: `readlink -f ~/.config/omarchy/plugins/oma-key-trainer; omarchy-shell shell listPlugins | jq -e '.[] | select(.id=="oma-key-trainer") | .enabled'` (pre: `/home/johnviklund/Work/plugin-keys-helper` / `true` → expect `/home/johnviklund/Work/oma-key-trainer` / `true`)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 
 ## Coverage
 
