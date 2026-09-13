@@ -6,9 +6,10 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 3 — render the curated list.
+- Current: Step 4 — install the plugin for QA.
 - Step 1 @ efeccd7
 - Step 2 @ 345039d
+- Step 3 @ e62ef06
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
 - In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
@@ -43,7 +44,8 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
   - Writer: OpenAI · GPT-5
   - Check: `omarchy plugin validate . && grep -o 'function \(open\|close\|dismiss\)(' KeyTrainer.qml | wc -l` (pre: validate fails "missing manifest.json"; grep count 0 → expect exit 0 and 3)
   - Skills: none
-- [ ] Step 3 — Render the list in `KeyTrainer.qml`: `FileView` loads `keybindings.json` via `Qt.resolvedUrl` into a `ListModel`; `PanelHero` title "Keybindings Trainer" + `PanelSeparator`; `ListView` rows = key combo (left, fixed width) + description (right, elided), one column, pool order; all colors/spacing from `Color.menu.*`/`Style` (F1, F6)
+- [x] Step 3 — Render the list in `KeyTrainer.qml`: `FileView` loads `keybindings.json` via `Qt.resolvedUrl` into a `ListModel`; `PanelHero` title "Keybindings Trainer" + `PanelSeparator`; `ListView` rows = key combo (left, fixed width) + description (right, elided), one column, pool order; all colors/spacing from `Color.menu.*`/`Style` (F1, F6)
+  - Writer: OpenAI · GPT-5
   - Check: `grep -o 'Qt.resolvedUrl("keybindings.json")\|PanelHero\|ListView' KeyTrainer.qml | sort | uniq -c` (pre: no output → expect each ≥ 1) paired guard: `grep -o '#[0-9a-fA-F]\{6\}' KeyTrainer.qml | wc -l` (pre: 0 → stays 0)
   - Skills: none
 - [ ] Step 4 — Install for QA: `ln -sfn "$PWD" ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins && omarchy plugin enable oma-key-trainer` (F3)
