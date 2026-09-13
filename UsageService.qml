@@ -26,6 +26,7 @@ Item {
       var parsed = JSON.parse(raw)
       root.poolEntries = Array.isArray(parsed) ? parsed : []
     } catch (error) {
+      console.warn("oma-key-trainer: keybindings.json parse failed: " + error)
       root.poolEntries = []
     }
     root.rebuild()
