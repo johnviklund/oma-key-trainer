@@ -6,13 +6,14 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 2 — manual QA blocked; Step 1 complete.
+- Current: Step 2 — manual QA in progress; Step 1 complete.
 - Writer: OpenAI · GPT-5 (self-declared).
 - Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
+- QA automation: enabled `oma-key-trainer`; list shows `enabled=true`; summon/hide and toggle exit 0; pool has 10 rows.
 - Step 1 @ 09a8f29.
 - In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
 - Uncommitted: this execution receipt only.
-- Pending: start `omarchy-shell`, then complete the visual and interaction observations for Step 2.
+- Pending: visual observation — top-right placement/theme and Escape/click-outside dismissal — then Step 2 can close.
 
 Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
 ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
@@ -68,7 +69,7 @@ local folder to `~/Work/oma-key-trainer` last.
 
 ## Deviations
 
-- Step 2 command could not run: every `omarchy-shell shell` call exited 1 with `omarchy-shell is not running`; no visual QA observation was recorded and no later step was started.
+- The sandbox cannot access the user session bus; outside it, `omarchy-shell` commands reach the running shell normally. Visual QA remains unrecorded.
 
 ## TODO impacts
 
