@@ -6,15 +6,16 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 4 — stopped: plugin was not discovered after the planned rescan.
+- Current: Step 5 — add the menu row and installation instructions.
 - Step 1 @ efeccd7
 - Step 2 @ 345039d
 - Step 3 @ e62ef06
+- Step 4 @ pending receipt commit
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
 - In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
 - Uncommitted: none.
-- Pending: `omarchy plugin enable oma-key-trainer` reported the plugin is not known after `rescanPlugins`; diagnose before retrying Step 4.
+- Pending: none.
 
 Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution repo
 `https://github.com/johnviklund/oma-key-trainer`; menu row `learn.keybindings-trainer`, label
@@ -48,7 +49,8 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
   - Writer: OpenAI · GPT-5
   - Check: `grep -o 'Qt.resolvedUrl("keybindings.json")\|PanelHero\|ListView' KeyTrainer.qml | sort | uniq -c` (pre: no output → expect each ≥ 1) paired guard: `grep -o '#[0-9a-fA-F]\{6\}' KeyTrainer.qml | wc -l` (pre: 0 → stays 0)
   - Skills: none
-- [ ] Step 4 — Install for QA: `ln -sfn "$PWD" ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins && omarchy plugin enable oma-key-trainer` (F3)
+- [x] Step 4 — Install for QA: `ln -sfn "$PWD" ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins && omarchy plugin enable oma-key-trainer` (F3)
+  - Writer: OpenAI · GPT-5
   - Check: `omarchy-shell shell listPlugins | jq -e '.[] | select(.id=="oma-key-trainer") | .enabled'` (pre: exit 4 — not discovered → expect `true`)
   - Skills: none
 - [ ] Step 5 — Menu row: add `"learn.keybindings-trainer": {"icon":"󰧑","label":"Keybindings Trainer","action":"omarchy-shell shell toggle oma-key-trainer '{}'"}` to `~/.config/omarchy/extensions/omarchy-menu.jsonc`; add an "Install" section to `README.md` with `omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable` plus that exact snippet (F5)
@@ -75,7 +77,7 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
 
 ## Deviations
 
-- Step 4 stopped: the planned symlink + `omarchy-shell shell rescanPlugins` did not make `oma-key-trainer` known to `omarchy plugin enable`; no workspace code was changed.
+- Step 4 initially stopped because the shell control plane was not running. After the user restarted it, the planned rescan and enable command passed; no workspace code was changed.
 
 ## TODO impacts
 
