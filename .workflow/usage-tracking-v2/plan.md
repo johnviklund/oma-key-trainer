@@ -1,19 +1,17 @@
-Command: workflow plan usage-tracking-v2 (re-audit of Steps 5–9 after the Step 5 check failed; supersedes the plan @ 34a407d)
+Command: workflow plan usage-tracking-v2 (re-audit of Step 8: stale-log check + missing visible window found by AE1; supersedes the plan @ 6ddbfe7)
 Created: 2026-09-13
-Base: 6ddbfe7781971bf154d76c214c7ed2dcdfd4aac7
+Base: 3afd4a490a34c8971ae46da1c23e0ca9f871a303
 Inputs: .workflow/usage-tracking-v2/brainstorm.md @ fda38938f1c4c656f458b12c010de195c396a483, .workflow/usage-tracking-v2/spec.md @ fda38938f1c4c656f458b12c010de195c396a483
 Status: complete
 
 ## Execution state
 
-- Current: Step 8 stopped — its exact shell-log check includes a stale pre-Step-5 runtime log
-- Next: re-plan Step 8 to select the active shell log; hands-on AE1–AE4 remain pending
+- Current: Steps 1–7 done; Step 8 (window) is next, then QA Steps 9–10
 - Writer: OpenAI · GPT-5 (self-declared, Steps 1–7)
-- Baseline: validate exit 0; live IPC pool 32/complete 1 before and after shell restart; updated card visibly renders counts
-- In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold)`, `allLearned(rows)`; counts contract v1; threshold 10
+- Baseline: validate exit 0; live IPC `{"pool":32,"complete":1,"allLearned":false}`; card renders counts; counts survive `omarchy-restart-shell`
+- In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold, windowSize)`, `allLearned(rows)`; counts contract v1; threshold 10; window 10
 - Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32
-- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 8 blocker checkpoint)
-- Pending decision: none
+- Pending decision: none (decision 4a 2026-09-13: 10-row window, pulled entries inserted at the top)
 
 ## Findings
 
@@ -30,6 +28,8 @@ Status: complete
 | F9 | `omarchy-plugin-validate` line 86 (mirroring `PluginRegistry.qml`) fails on a declared entry point whose file is missing, and the repo is symlinked into `~/.config/omarchy/plugins/`, so a manifest naming an absent `UsageService.qml` breaks validation and would drop the plugin on the next rescan | Old Steps 5 and 6 are one verifiable unit → merged Step 5; the already-applied `manifest.json` edit stays uncommitted until that step's commit |
 | F10 | On rescan `shell.qml` `onScanFinished` runs `_syncServices()` (synchronous `ensureService`, `Component.PreferSynchronous`) before `syncPluginWidgets()`; `_services` is a `property var` reassigned wholesale | The bar widget's `bar?.shell?.serviceFor(...)` binding resolves at widget creation and re-evaluates on service replacement; no lazy retry needed |
 | F11 | Third-party services are created with `createObject(null)` and get `shell`/`manifest` injected only if declared; `omarchy.idle`/`omarchy.media` use an `Item` root with `IpcHandler { target }` and `status(): string`; `omarchy.idle` watches its state *directory* (`FileView { path: dir; watchChanges: true; onFileChanged }`) and re-reads, because a rename-replaced file leaves a file-path watch stale | `UsageService.qml` is an `Item` with `property var shell`, `property var manifest`; it watches the state dir and `reload()`s a second `FileView` on counts.json on `fileChanged` and in `refresh()` |
+| F12 | `visibleEntries` returns every pool row (32 visible); `PRODUCT.md` "Visible list — the ~10-row window", R8/R9/AE1 require a window that pulls entries in; decision 4a: window of 10 incomplete, each pulled entry inserted at the top | Window = shortest pool prefix holding 10 incomplete rows (whole pool if fewer); rows = incomplete with index ≥ 10 in reverse pool order, then incomplete with index < 10 in pool order, then the window's complete rows in pool order — still derived from counts alone, F7's "no persisted position" stands |
+| F13 | `by-id/*/log.log` keeps dead instances (`vrxzzalt`, `tv8179bblt`); `by-pid/<pid>` → the live one, `pgrep -xo quickshell` gives that pid; `omarchy-launch-shell` also pipes stderr to the journal (`journalctl --user -t omarchy-shell`) — `AGENTS.md`'s "no journald unit" is stale | Log check reads `by-pid/$(pgrep -xo quickshell)/log.log`; `omarchy-restart-shell` is the restart command (pid changes, selector follows) |
 
 ## Checklist
 
@@ -61,15 +61,21 @@ Status: complete
   - Check: `grep -o 'usageService' KeyTrainer.qml | wc -l; grep -o 'FileView' KeyTrainer.qml | wc -l` — expect ≥ 3 and 0 (pre: `0`, `1`)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 8 — Manual QA per `AGENTS.md`: rescan, open the card, press a pool chord with the card open (row count moves live), close/reopen, restart the shell (counts survive), walk AE1–AE4 in `docs/archive/PRD-2026-09-13.md`; shell log clean
-  - Check: `omarchy-shell shell listPlugins | grep -o 'oma-key-trainer' | wc -l; grep -ic 'oma-key-trainer' /run/user/$(id -u)/quickshell/by-id/*/log.log` — expect `1` and `0` (pre: `1`, `0`)
+- [ ] Step 8 — `UsageModel.js` `visibleEntries(pool, counts, threshold, windowSize)` per F12 (window 10, pulled rows on top); `UsageService.qml`: pass `windowSize`, `statusJson()` gains `visible` (row count) and `pool` becomes `poolEntries.length` (F7, F12)
+  - Check: `node -e "eval(require('fs').readFileSync('UsageModel.js','utf8')); var p='abcdefghijkl'.split('').map(function(c){return {id:c,action:c.toUpperCase()}}); var r=visibleEntries(p,{C:10,K:10},10,10); console.log(r.map(function(x){return x.id}).join(' '), r.length)" && omarchy-shell shell rescanPlugins && sleep 2 && omarchy-shell oma-key-trainer status` — expect `l a b d e f g h i j c k 12` then `"pool":32,"visible":10,"complete":0` (pre: `a b d e f g h i j l c k 12`; `{"pool":32,"complete":1,"allLearned":false}`)
+  - Skills: none
+- [ ] Step 9 — Manual QA, AE1 + AE2 + persistence + log: back up `counts.json`; set `"Toggle window split"` to 9 in it; `hyprctl reload` (hook re-reads); open the card; press SUPER+J with the card open → row turns "Complete", dims, drops to the bottom, "Pseudo window" appears at the top (AE1, live 3a); close the card, press SUPER+J again (AE2, counts past 10); `omarchy-restart-shell`, reopen → same rows (R12); log clean (F13)
+  - Check: `omarchy-shell oma-key-trainer status; grep -o '"Toggle window split":1[1-9]' ~/.local/state/omarchy/oma-key-trainer/counts.json | wc -l; grep -i 'oma-key-trainer' /run/user/$(id -u)/quickshell/by-pid/$(pgrep -xo quickshell)/log.log | wc -l` — expect `"visible":11,"complete":1`, `1`, `0` (pre: `{"pool":32,"complete":1,"allLearned":false}`, `0`, `0`)
+  - Skills: none
+- [ ] Step 10 — Manual QA, AE3 + AE4: append `hl.unbind("SUPER + J")` + `o.bind("SUPER + SHIFT + J", "Toggle window split", hl.dsp.layout("togglesplit"))` to `~/.config/hypr/bindings.lua`, `hyprctl reload`, press SUPER+SHIFT+J → the "Toggle window split" count rises, the row still reads "SUPER + J" (AE3); revert, reload. Then write a counts.json with all 32 pool actions at 10 except "Pseudo window" at 9 (python over `keybindings.json`), `hyprctl reload`, press SUPER+P → "All keybindings learned" replaces the list (AE4); run the check, then restore the Step 9 backup and `hyprctl reload`
+  - Check: `omarchy-shell oma-key-trainer status | grep -o '"allLearned":true' | wc -l` (run before restoring the backup) — expect `1` (pre: `0`)
   - Skills: none
 
 ## Coverage
 
 - Pick/validate the background event source → Steps 1, 2 (F1–F3: `o.bind` hook, not socket2)
-- Persist per-binding counts + rotation position across reboots → Steps 1, 4, 5 (F5, F7, F11)
-- Completion at 10, rotation, all-learned state (R8, R9, R11) → Steps 4, 5, 7
+- Persist per-binding counts + rotation position across reboots → Steps 1, 4, 5 (F5, F7, F11); restart proof in Step 9
+- Completion at 10, rotation, all-learned state (R8, R9, R11) → Steps 4, 5, 7, 8 (window, F12); proven by Steps 9–10 (AE1–AE4)
 - Author the larger curated pool in author-fixed order (R9) → Step 3
 - Non-goal: settle the two UI questions now → resolved 2026-09-13 by decision (2a, 3a) — recorded in F8, applied in Steps 6–7
 - Non-goal: split pool authoring into its own run → untouched
@@ -78,15 +84,15 @@ Status: complete
 
 ## Risks
 
-- Step 5 is now the riskiest remaining: the service is the first kept-loaded, null-parented third-party object in this plugin, and a load error there (`service plugin load failed`) leaves the card without a model — Step 7's missing-service warning is the only visible symptom.
-- Outside its files: the user's `~/.config/hypr/hyprland.lua` gains a `require` (opt-in, `require_optional` so a removed plugin is harmless); an Omarchy update renaming a description silently stops counting that action; a stale file-path watch would freeze the live counter (F11 mitigates).
-- Not taken: self-installing the hook from `~/.local/state/omarchy/toggles/hypr/` (needs a metatable proxy on `o`, a double reload, and leaves live code behind after uninstall).
+- Step 8 is the riskiest remaining: the window rule (F12) is the rotation contract the user sees; a wrong prefix rule hides a complete-but-unpulled row or shows 11 incomplete — Step 9's AE1 is the only human-visible proof.
+- Outside its files: Steps 9–10 hand-edit `counts.json` and `~/.config/hypr/bindings.lua` as test seams (R10 untouched — no product path marks completion); a forgotten restore leaves the user's progress or bindings altered.
+- Not taken: a separate `visible` list in the service with `visibleEntries` unchanged — two orderings to keep in sync for no gain.
 
 ## Deviations
 
 - Old Step 5's check failed after its prescribed edit: `omarchy plugin validate .` reported `entry point file not found: 'UsageService.qml'` — resolved by this re-plan (F9): merged into the new Step 5.
 - Step 5's first IPC attempt was blocked by the executor sandbox (`omarchy-shell is not running`); the required rescan and status check then passed against the active desktop session with elevated sandbox access.
-- Step 8 loaded the updated card and preserved `{"pool":32,"complete":1,"allLearned":false}` across a shell restart. Its exact log check returned `0`, `0`, and `1` because the glob includes stale runtime `vrxzzalt` (the one match is the known 19:00 pre-Step-5 missing-file warning); both newer shell logs are clean. Per the failed-check rule, Step 8 remains unchecked until the plan targets the active shell log and AE1–AE4 are completed.
+- Old Step 8: card + restart passed, but its log check hit `1` from the dead `vrxzzalt` runtime (the known 19:00 pre-Step-5 warning) and AE1 could not pass (all 32 rows visible) — re-planned as Steps 8–10 (F12, F13; decision 4a).
 
 ## TODO impacts
 
@@ -98,5 +104,6 @@ Status: complete
 ## Product doc impacts
 
 - `PRODUCT.md` — Platform facts: "exact event source … is a Planning-phase decision" → decided: Omarchy's `o.bind` Lua registration hook, opted in by one line in `~/.config/hypr/hyprland.lua`; Core objects "Binding entry … underlying Hyprland action" → the Omarchy bind description; Open product decisions: both UI questions → decided 2026-09-13 (fixed "Complete" marker; live counter). Note: v2 background counting requires the opt-in line — a real install step for the core feature (accepted with decision 1a, not an ESCALATE).
+- `PRODUCT.md` — Vocabulary "Visible list — … not-yet-complete bindings in pool order" → the 10-row window: pulled entries stack at the top (newest first), the initial rows keep pool order, completed rows sit at the bottom (decision 4a); `AGENTS.md` — Shell log: "no journald unit" → also in the journal under tag `omarchy-shell` (`journalctl --user -t omarchy-shell`); the runtime file is `by-pid/$(pgrep -xo quickshell)/log.log`.
 - `DESIGN.md` — Box layout v2: "open product decision" → completed rows show a fixed "Complete" marker and a dimmed row; the counter reads `n/10` live.
 - `ROADMAP.md` — Phase 2's four items checked off at wrap; "Later" note about open decisions → resolved.
