@@ -6,13 +6,13 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 2 — manual QA; Step 1 complete.
+- Current: Step 2 — manual QA blocked; Step 1 complete.
 - Writer: OpenAI · GPT-5 (self-declared).
 - Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
 - Step 1 @ 09a8f29.
 - In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
 - Uncommitted: this execution receipt only.
-- Pending decision: none.
+- Pending: start `omarchy-shell`, then complete the visual and interaction observations for Step 2.
 
 Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
 ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
@@ -65,6 +65,10 @@ local folder to `~/Work/oma-key-trainer` last.
 - Riskiest: Step 3 — first push to an empty public repo with branch rename; `--ff-only` and `branch -d` refuse rather than lose history, but a failed `gh auth setup-git` leaves a half-done local rename with no remote — finish the branch steps, then retry the push.
 - Outside its files: Step 4 breaks this session's cwd and any other symlink or shell pointing at `plugin-keys-helper`; the menu row depends on the icon staying in the bar layout (F3) — removing the icon via bar settings silently kills the row.
 - Not taken: declaring both `overlay` and `bar-widget` kinds so the menu row works without the icon — extra shell wiring for a row that is optional by decision 1a.
+
+## Deviations
+
+- Step 2 command could not run: every `omarchy-shell shell` call exited 1 with `omarchy-shell is not running`; no visual QA observation was recorded and no later step was started.
 
 ## TODO impacts
 
