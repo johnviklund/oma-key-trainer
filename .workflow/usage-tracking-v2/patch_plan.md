@@ -12,13 +12,13 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
 
 ## Execution state
 
-- Current: Step 1 done; Step 2 ready
+- Current: Step 1 done; Step 2 paused — prescribed shell-restart check exited 1 before status
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` exit 0; Step 1 count `"Toggle window split":3` → `4` after one physical press
 - Step commits: Step 1 @ 149f08c
-- In flight: none
-- Uncommitted: `.workflow/usage-tracking-v2/patch_plan.md`
-- Pending: none
+- In flight: `loadPool` now warns before clearing an invalid pool
+- Uncommitted: `UsageService.qml`, `.workflow/usage-tracking-v2/patch_plan.md`
+- Pending: rerun or revise Step 2 check after `omarchy-restart-shell` readiness failure; follow-up IPC status is healthy (`pool:32`)
 
 ## Checklist
 
@@ -46,6 +46,10 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
 
 - C1-4 (P3, defer): record-before-dispatch under the 100 ms keybind watchdog — speculative on this hardware; revisit only if a keypress ever drops.
 - C1-5 (P3, wontfix): `drag`-style binds count twice per use — not in the pool; pool-curation note recorded in review.md.
+
+## Deviations
+
+- Step 2: `console.warn` count was `1` and validation passed, but `omarchy-restart-shell` exited 1 with `Omarchy shell did not become ready after restart.` The immediate follow-up IPC status returned `{"pool":32,"visible":11,"complete":1,"allLearned":false}` and `hyprctl configerrors` was empty; stopped without committing `UsageService.qml` because the prescribed check itself failed.
 
 ## After the last step
 
