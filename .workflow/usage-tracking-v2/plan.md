@@ -6,13 +6,13 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 6 complete and committed
-- Next: Step 7 (`KeyTrainer.qml` tracked-progress UI)
-- Writer: OpenAI · GPT-5 (self-declared, Steps 1–6)
+- Current: Step 7 complete and committed
+- Next: Step 8 (manual v2 QA and shell-log check)
+- Writer: OpenAI · GPT-5 (self-declared, Steps 1–7)
 - Baseline: `omarchy plugin validate .` exit 0; `IpcHandler` count 1; live IPC `{"pool":32,"complete":0,"allLearned":false}`
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold)`, `allLearned(rows)`; counts contract v1; threshold 10
-- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546
-- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 6 checkpoint)
+- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32
+- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 7 checkpoint)
 - Pending decision: none
 
 ## Findings
@@ -57,9 +57,10 @@ Status: complete
   - Check: `grep -o 'serviceFor' BarWidget.qml | wc -l` — expect `1` (pre: `0`)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 7 — `KeyTrainer.qml`: render `usageService.visibleEntries` — count column (`n/10`), fixed "Complete" marker + dimmed row for complete entries, all-learned message in place of the list; drop the local `FileView`/`keybindingsModel`; warn on missing service instead of an empty card (F8; TODO C1-2 tag-along)
+- [x] Step 7 — `KeyTrainer.qml`: render `usageService.visibleEntries` — count column (`n/10`), fixed "Complete" marker + dimmed row for complete entries, all-learned message in place of the list; drop the local `FileView`/`keybindingsModel`; warn on missing service instead of an empty card (F8; TODO C1-2 tag-along)
   - Check: `grep -o 'usageService' KeyTrainer.qml | wc -l; grep -o 'FileView' KeyTrainer.qml | wc -l` — expect ≥ 3 and 0 (pre: `0`, `1`)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 8 — Manual QA per `AGENTS.md`: rescan, open the card, press a pool chord with the card open (row count moves live), close/reopen, restart the shell (counts survive), walk AE1–AE4 in `docs/archive/PRD-2026-09-13.md`; shell log clean
   - Check: `omarchy-shell shell listPlugins | grep -o 'oma-key-trainer' | wc -l; grep -ic 'oma-key-trainer' /run/user/$(id -u)/quickshell/by-id/*/log.log` — expect `1` and `0` (pre: `1`, `0`)
   - Skills: none
