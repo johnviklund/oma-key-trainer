@@ -6,12 +6,12 @@ Status: complete
 
 ## Execution state
 
-- Current: Steps 1–8 done; Step 9 (AE1/AE2, persistence, log) is next, then QA Step 10
+- Current: Steps 1–8 done; Step 9 is blocked at its real-key manual check; Step 10 follows once Step 9 passes
 - Writer: OpenAI · GPT-5 (self-declared, Steps 1–8)
 - Baseline: validate exit 0; Step 8 model check `l a b d e f g h i j c k 12`; live IPC after shell restart `{"pool":32,"visible":10,"complete":0,"allLearned":false}`
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold, windowSize)`, `allLearned(rows)`; counts contract v1; threshold 10; window 10
 - Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32; Step 8 @ 985f702
-- Pending decision: none (decision 4a 2026-09-13: 10-row window, pulled entries inserted at the top)
+- Pending decision: none; Step 9 counts backup restored after the unsuccessful virtual-key attempt (decision 4a: 10-row window, pulled entries inserted at the top)
 
 ## Findings
 
@@ -95,6 +95,7 @@ Status: complete
 - Step 5's first IPC attempt was blocked by the executor sandbox (`omarchy-shell is not running`); the required rescan and status check then passed against the active desktop session with elevated sandbox access.
 - Old Step 8: card + restart passed, but its log check hit `1` from the dead `vrxzzalt` runtime (the known 19:00 pre-Step-5 warning) and AE1 could not pass (all 32 rows visible) — re-planned as Steps 8–10 (F12, F13; decision 4a).
 - Step 8: `omarchy-shell shell rescanPlugins` retained the existing kept-loaded service and returned its old status without `visible`; restarting the shell reloaded the service and produced the expected status. The implementation is verified; future hot-reload checks for this service need a shell restart.
+- Step 9: `wtype -M logo -k j -m logo` exited 0 but did not traverse the live `SUPER+J` bind or the Lua hook: service remained `{"pool":32,"visible":10,"complete":0,"allLearned":false}` and the expected counts match was `0`. The original counts backup was restored and `hyprctl reload` passed. Finish this manual step with a physical SUPER+J press while the card is open.
 
 ## TODO impacts
 
