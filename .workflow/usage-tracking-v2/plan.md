@@ -6,13 +6,13 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 7 complete and committed
-- Next: Step 8 (manual v2 QA and shell-log check)
+- Current: Step 8 stopped — its exact shell-log check includes a stale pre-Step-5 runtime log
+- Next: re-plan Step 8 to select the active shell log; hands-on AE1–AE4 remain pending
 - Writer: OpenAI · GPT-5 (self-declared, Steps 1–7)
-- Baseline: `omarchy plugin validate .` exit 0; `IpcHandler` count 1; live IPC `{"pool":32,"complete":0,"allLearned":false}`
+- Baseline: validate exit 0; live IPC pool 32/complete 1 before and after shell restart; updated card visibly renders counts
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold)`, `allLearned(rows)`; counts contract v1; threshold 10
 - Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32
-- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 7 checkpoint)
+- Uncommitted: `.workflow/usage-tracking-v2/plan.md` (Step 8 blocker checkpoint)
 - Pending decision: none
 
 ## Findings
@@ -86,6 +86,7 @@ Status: complete
 
 - Old Step 5's check failed after its prescribed edit: `omarchy plugin validate .` reported `entry point file not found: 'UsageService.qml'` — resolved by this re-plan (F9): merged into the new Step 5.
 - Step 5's first IPC attempt was blocked by the executor sandbox (`omarchy-shell is not running`); the required rescan and status check then passed against the active desktop session with elevated sandbox access.
+- Step 8 loaded the updated card and preserved `{"pool":32,"complete":1,"allLearned":false}` across a shell restart. Its exact log check returned `0`, `0`, and `1` because the glob includes stale runtime `vrxzzalt` (the one match is the known 19:00 pre-Step-5 missing-file warning); both newer shell logs are clean. Per the failed-check rule, Step 8 remains unchecked until the plan targets the active shell log and AE1–AE4 are completed.
 
 ## TODO impacts
 
