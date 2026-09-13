@@ -6,8 +6,9 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 2 — scaffold manifest and overlay lifecycle.
+- Current: Step 3 — render the curated list.
 - Step 1 @ efeccd7
+- Step 2 @ 345039d
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
 - In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
@@ -38,7 +39,8 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
   - Writer: OpenAI · GPT-5
   - Check: `jq -e 'length >= 8 and length <= 12 and all(.[]; has("id") and has("keys") and has("description"))' keybindings.json` (pre: exit 2 — file missing)
   - Skills: none
-- [ ] Step 2 — Scaffold `manifest.json` (id `oma-key-trainer`, name "Keybindings Trainer", version 0.1.0, homepage/repository = GitHub URL, `kinds: ["overlay"]`, `entryPoints.overlay: "KeyTrainer.qml"`, no `keepLoaded`) and the overlay lifecycle in `KeyTrainer.qml`: `opened`/`open()`/`close()`/`dismiss()`, injected `shell`/`manifest`/`omarchyPath`, fullscreen `PanelWindow` (Overlay layer, exclusive keyboard focus) with `Color.menu.scrim`, centered `BorderSurface` card, Escape and click-outside dismiss (F1, F2, F4, F9)
+- [x] Step 2 — Scaffold `manifest.json` (id `oma-key-trainer`, name "Keybindings Trainer", version 0.1.0, homepage/repository = GitHub URL, `kinds: ["overlay"]`, `entryPoints.overlay: "KeyTrainer.qml"`, no `keepLoaded`) and the overlay lifecycle in `KeyTrainer.qml`: `opened`/`open()`/`close()`/`dismiss()`, injected `shell`/`manifest`/`omarchyPath`, fullscreen `PanelWindow` (Overlay layer, exclusive keyboard focus) with `Color.menu.scrim`, centered `BorderSurface` card, Escape and click-outside dismiss (F1, F2, F4, F9)
+  - Writer: OpenAI · GPT-5
   - Check: `omarchy plugin validate . && grep -o 'function \(open\|close\|dismiss\)(' KeyTrainer.qml | wc -l` (pre: validate fails "missing manifest.json"; grep count 0 → expect exit 0 and 3)
   - Skills: none
 - [ ] Step 3 — Render the list in `KeyTrainer.qml`: `FileView` loads `keybindings.json` via `Qt.resolvedUrl` into a `ListModel`; `PanelHero` title "Keybindings Trainer" + `PanelSeparator`; `ListView` rows = key combo (left, fixed width) + description (right, elided), one column, pool order; all colors/spacing from `Color.menu.*`/`Style` (F1, F6)
