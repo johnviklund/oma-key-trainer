@@ -13,3 +13,13 @@ Intake scratchpad for ideas between workflow runs. Don't implement just because 
 ## Ideas
 
 (none yet)
+
+## Deferred from runs
+
+- **Re-base the trainer card on the kit's `PopupCard`/`Panel`** — deferred from `plugin-scaffold-v1`
+  review (C1-1 P2, with C1-3 folded in). Today `KeyTrainer.qml` hand-rolls a full-screen
+  `PanelWindow` anchored top-right, so a bottom/left/right bar or a second monitor puts the card
+  away from its icon; `dismiss()` also still calls `shell.hide()` from the old overlay contract.
+  `DESIGN.md`'s "no independent layout system" non-goal is the target. Small cleanups to take along:
+  warn on `keybindings.json` load/parse failure instead of an empty card (C1-2); drop the unused
+  `omarchyPath` property (C1-4).
