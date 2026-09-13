@@ -12,10 +12,10 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
 
 ## Execution state
 
-- Current: Steps 1–2 done; Step 3 ready
+- Current: Steps 1–3 done; ready for Phase 4 review cycle 2
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` exit 0; Step 1 count `"Toggle window split":3` → `4` after one physical press
-- Step commits: Step 1 @ 149f08c; Step 2 @ f811b34
+- Step commits: Step 1 @ 149f08c; Step 2 @ f811b34; Step 3 @ 003a734
 - In flight: none
 - Uncommitted: `.workflow/usage-tracking-v2/patch_plan.md`
 - Pending: none
@@ -37,10 +37,10 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
   - Check: `grep -o 'console.warn' UsageService.qml | wc -l && omarchy plugin validate . && omarchy-restart-shell && sleep 3 && omarchy-shell oma-key-trainer status` — expect `1` (pre: `0`), validate exit 0, then a JSON line containing `"pool":32` (the service still loads)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 3 — C1-1 · `UsageService.qml`: `refresh()` gains `stateDirWatcher.reload()` as its last statement (after `countsFile.reload()`), so every card open recreates the directory watch (same pattern as `/usr/share/omarchy/shell/plugins/services/idle/Service.qml:308`). Nothing else changes.
+- [x] Step 3 — C1-1 · `UsageService.qml`: `refresh()` gains `stateDirWatcher.reload()` as its last statement (after `countsFile.reload()`), so every card open recreates the directory watch (same pattern as `/usr/share/omarchy/shell/plugins/services/idle/Service.qml:308`). Nothing else changes.
   - Check: `grep -o 'stateDirWatcher.reload()' UsageService.qml | wc -l && omarchy plugin validate . && omarchy-restart-shell && sleep 3 && omarchy-shell oma-key-trainer status && grep -ic 'oma-key-trainer' /run/user/$(id -u)/quickshell/by-pid/$(pgrep -xo quickshell)/log.log` — expect `1` (pre: `0`), validate exit 0, a JSON line containing `"pool":32`, then `0` (no plugin warning from the reload of a directory path — `printErrors: false` is already set)
   - Skills: none
-  - Writer: —
+  - Writer: OpenAI · GPT-5
 
 ## Deferred / wontfix (no steps — confirm the reasoning still holds, do not implement)
 
@@ -50,6 +50,7 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
 ## Deviations
 
 - Step 2: the first two restart checks were mistakenly run inside the executor sandbox, so the helper's internal `omarchy-shell shell ping` could not see the session and returned `Omarchy shell did not become ready after restart.` After confirming the sandbox false negative, the required unsandboxed restart and status check passed with `{"pool":32,"visible":12,"complete":2,"allLearned":false}`.
+- Step 3: the prescribed final `grep -ic ...` prints the expected `0` but exits 1 when there are no matches, making the full `&&` chain unsatisfiable. Ran the same assertion as an explicit zero-match conditional; it printed `0` and exited 0 without changing the expected result.
 
 ## After the last step
 
