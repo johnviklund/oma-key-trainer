@@ -6,7 +6,7 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 4 — install the plugin for QA.
+- Current: Step 4 — stopped: plugin was not discovered after the planned rescan.
 - Step 1 @ efeccd7
 - Step 2 @ 345039d
 - Step 3 @ e62ef06
@@ -14,7 +14,7 @@ Status: complete
 - Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
 - In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
 - Uncommitted: none.
-- Pending decision: none.
+- Pending: `omarchy plugin enable oma-key-trainer` reported the plugin is not known after `rescanPlugins`; diagnose before retrying Step 4.
 
 Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution repo
 `https://github.com/johnviklund/oma-key-trainer`; menu row `learn.keybindings-trainer`, label
@@ -72,6 +72,10 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
 - Riskiest: Step 3 — the first QML in the repo with no lint/test harness; a binding typo only shows as a blank card at runtime, so Step 6's visual walk is the real gate.
 - Outside its files: Step 5 edits user config (`~/.config/omarchy/extensions/omarchy-menu.jsonc`), hot-reloaded by the live menu; a JSONC syntax slip can break the whole menu until reverted.
 - Not taken: `kind: "panel"` on the `qs.Ui/Panel` base — it is bar-anchored and needs a `bar`; the menu-summoned centered card is the overlay pattern (F1).
+
+## Deviations
+
+- Step 4 stopped: the planned symlink + `omarchy-shell shell rescanPlugins` did not make `oma-key-trainer` known to `omarchy plugin enable`; no workspace code was changed.
 
 ## TODO impacts
 
