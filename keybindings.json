@@ -1,0 +1,52 @@
+[
+  {
+    "id": "open-terminal",
+    "keys": "SUPER + RETURN",
+    "description": "Terminal"
+  },
+  {
+    "id": "omarchy-menu",
+    "keys": "SUPER + SPACE",
+    "description": "Omarchy menu"
+  },
+  {
+    "id": "close-window",
+    "keys": "SUPER + W",
+    "description": "Close window"
+  },
+  {
+    "id": "toggle-window-split",
+    "keys": "SUPER + J",
+    "description": "Toggle window split"
+  },
+  {
+    "id": "toggle-window-floating-tiling",
+    "keys": "SUPER + T",
+    "description": "Toggle window floating/tiling"
+  },
+  {
+    "id": "full-screen",
+    "keys": "SUPER + F",
+    "description": "Full screen"
+  },
+  {
+    "id": "focus-left-window",
+    "keys": "SUPER + LEFT",
+    "description": "Focus on left window"
+  },
+  {
+    "id": "focus-right-window",
+    "keys": "SUPER + RIGHT",
+    "description": "Focus on right window"
+  },
+  {
+    "id": "focus-above-window",
+    "keys": "SUPER + UP",
+    "description": "Focus on above window"
+  },
+  {
+    "id": "focus-below-window",
+    "keys": "SUPER + DOWN",
+    "description": "Focus on below window"
+  }
+]
