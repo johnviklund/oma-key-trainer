@@ -5,10 +5,11 @@ Sequencing only — see `PRODUCT.md` for what/why. Each item is sized to one fut
 
 ## Phase 1 — Plugin scaffold + v1 static list
 
-- [ ] Scaffold the plugin folder (`manifest.json`, menu entry, overlay QML) and get it loading
-  via `omarchy plugin enable`.
-- [ ] Author the initial curated ~10 (key combo, description) as static content.
-- [ ] Render the box using `qs.Ui`/`qs.Commons` per `DESIGN.md`; wire the menu entry (R1–R3).
+- [x] Scaffold the plugin folder (`manifest.json`, bar widget + card QML) and get it loading
+  via `omarchy plugin enable`. (plugin-scaffold-v1)
+- [x] Author the initial curated ~10 (key combo, description) as static content. (plugin-scaffold-v1)
+- [x] Render the box using `qs.Ui`/`qs.Commons` per `DESIGN.md`; wire the entry point — bar icon,
+  optional menu row (R1–R3). (plugin-scaffold-v1)
 
 ## Phase 2 — v2 usage tracking
 

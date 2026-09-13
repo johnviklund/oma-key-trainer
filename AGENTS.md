@@ -39,9 +39,9 @@ wrong — fix the doc, don't duplicate the sentence.
 - **Build:** `omarchy plugin validate <path-to-this-plugin-folder>` — healthy output is exit 0
   with no schema errors printed.
 - **Test:** TODO — no automated test harness exists for Quickshell/QML plugins in this ecosystem
-  yet. Until one is chosen, "test" means manual QA: `omarchy plugin enable <id>`, trigger the
-  plugin from the menu, and walk the acceptance examples AE1–AE4 in
-  `docs/archive/PRD-2026-09-13.md` by hand.
+  yet. Until one is chosen, "test" means manual QA: `omarchy plugin enable <id>`, click the bar
+  icon (or `omarchy-shell shell toggle oma-key-trainer '{}'`), and walk R1–R3 for v1 or the
+  acceptance examples AE1–AE4 for v2 in `docs/archive/PRD-2026-09-13.md` by hand.
 - **Lint:** TODO — no `qmllint` or equivalent is installed on this machine; revisit if one
   becomes available.
 - Run whatever of the above applies before reporting any step done, and paste the result.

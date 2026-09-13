@@ -12,9 +12,13 @@ form, tracking real usage until each binding is second nature.
 
 ## Current state → desired end state
 
-- **Current:** not yet built — this repo is a fresh bootstrap.
-- **v1 (first milestone):** a static reference box, reachable from Omarchy's existing top-right
-  menu, listing ~10 curated keybindings (key combo + description). View-only.
+- **Current:** v1 built and published (plugin id `oma-key-trainer`, `main` on
+  `https://github.com/johnviklund/oma-key-trainer`, run `plugin-scaffold-v1`): a bar icon at the
+  top-right of the bar opens a card listing the curated 10. View-only; no tracking yet.
+- **v1 (first milestone, shipped):** a static reference box, reachable from a dedicated top-right
+  bar icon (and, optionally, a user-added row in Omarchy's Learn menu — see `README.md`), listing
+  ~10 curated keybindings (key combo + description). View-only. Decision 2026-09-13: the bar icon
+  replaced the PRD's menu-entry shape (R1) as the primary entry point; the menu row stays optional.
 - **v2 (desired end state):** the same box tracks real usage per keybinding in the background
   (box open or closed), marks a binding complete at 10 uses, rotates it to the bottom of the
   visible list, and pulls the next binding from a larger curated pool to the top. Progress
@@ -54,8 +58,9 @@ multi-user concept in v1 or v2.
   exact event source (e.g. a Hyprland IPC/dispatch stream) is a Planning-phase decision, not
   settled here.
 - User-installed plugins live at `~/.config/omarchy/plugins/<plugin-id>/`. This repo is that
-  plugin's source — installable via `omarchy plugin add <this repo's git URL>` once it has a
-  remote, or via local copy/symlink during development.
+  plugin's source — installable via
+  `omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable`, or via a
+  symlink into that path during development (`AGENTS.md`).
 
 ## Core objects
 
@@ -106,4 +111,5 @@ see Core objects above. "v1"/"v2" name milestones of one product, not separate p
   "Complete" indicator — deferred to Planning.
 - Exact content of the curated ~10 and the larger pool (which bindings, descriptions, priority
   order) — content curation, authored during implementation.
-- Plugin id / distribution name — not yet chosen; propose during Planning.
+- ~~Plugin id / distribution name~~ — decided 2026-09-13: `oma-key-trainer` (folder, manifest id,
+  GitHub repo name all match).

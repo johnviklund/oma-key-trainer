@@ -1,17 +1,21 @@
 # Design
 
-This plugin has a UI (a menu entry + a box), but it does not own a design system — it inherits
+This plugin has a UI (a bar icon + a card, optionally also a menu row), but it does not own a design system — it inherits
 Omarchy shell's, by requirement (PRD R1: match the visual and interaction style of other built-in
 menu entries).
 
 ## Conform, don't invent
 
-- Build the box from the shared `qs.Ui` component kit (`Panel`, `PanelHero`,
-  `PanelSectionHeader`, `PanelSeparator`, `Button`, ...) — browsable via `omarchy dev ui preview`.
+- Build the box from the shared `qs.Ui` component kit — browsable via `omarchy dev ui preview`.
+  v1 as shipped: bar icon = `BarWidget` + `WidgetButton`; card = `PanelWindow` + `BorderSurface`
+  with `PanelHero`/`PanelSeparator`, themed by `Color.menu.*`. Known gap (review C1-1, deferred to
+  `TODO.md`): the card positions itself rather than through the kit's `PopupCard`/`Panel`, so bar
+  position and multi-monitor are not yet handled by the kit — the non-goal below still stands.
 - Colors, spacing, and borders come from the `qs.Commons` theme singletons (`Color`, `Style`,
   `Border`), never hardcoded, so the box matches whatever theme the user has active.
-- Open/close interaction mirrors existing overlay plugins (Emojis, Clipboard): summoned from a
-  menu action, dismissed the same way those are.
+- Open/close interaction: toggled from its bar icon (or `omarchy-shell shell toggle
+  oma-key-trainer '{}'`, which the optional menu row uses), dismissed by Escape or click-outside —
+  the same scrim + Escape pattern the Emojis overlay uses.
 
 ## Box layout
 
