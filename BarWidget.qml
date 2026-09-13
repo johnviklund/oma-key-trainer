@@ -6,15 +6,19 @@ BarWidget {
   moduleName: "oma-key-trainer"
 
   readonly property bool opened: trainerLoader.item ? trainerLoader.item.opened === true : false
+  readonly property var usageService: bar?.shell?.serviceFor("oma-key-trainer") ?? null
 
   implicitWidth: button.implicitWidth
   implicitHeight: button.implicitHeight
 
   function injectTrainer() {
-    if (trainerLoader.item) trainerLoader.item.shell = root.bar ? root.bar.shell : null
+    if (!trainerLoader.item) return
+    trainerLoader.item.shell = root.bar ? root.bar.shell : null
+    trainerLoader.item.usageService = root.usageService
   }
 
   function open() {
+    if (root.usageService) root.usageService.refresh()
     if (trainerLoader.item) trainerLoader.item.open("{}")
   }
 
@@ -28,6 +32,7 @@ BarWidget {
   }
 
   onBarChanged: injectTrainer()
+  onUsageServiceChanged: injectTrainer()
 
   Loader {
     id: trainerLoader
