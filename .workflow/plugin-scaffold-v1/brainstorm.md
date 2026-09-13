@@ -2,7 +2,7 @@ Command: workflow brainstorm plugin-scaffold-v1
 Created: 2026-09-13
 Base: 94d4abe2e2c74ea2d1761ded064c42f4a6bdc8a5
 Inputs: none
-Status: complete
+Status: done
 
 ## Roadmap status
 

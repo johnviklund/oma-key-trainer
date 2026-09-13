@@ -2,7 +2,7 @@ Command: workflow wrap plugin-scaffold-v1
 Created: 2026-09-13
 Base: 0ae072205741a4f184624dca9779ae806e33a8bf
 Inputs: review.md @ 0ae072205741a4f184624dca9779ae806e33a8bf
-Status: drafting
+Status: done
 
 Dispositions: human invoked wrap without overriding review's defaults → all four findings stay
 `defer` (C1-1 → TODO.md; C1-2/C1-4 → cleanup-on-next-touch note). Seat note: wrap ran on
@@ -17,4 +17,4 @@ Anthropic · Opus 5 (human kept the reviewer model) instead of ROUTING.md's Sonn
 - [x] 6 TODO hygiene — added the one human-deferred item (C1-1 + C1-3, C1-2/C1-4 as tag-alongs) under "Deferred from runs"; the two open questions are v2 questions, not duplicates of Phase 2 roadmap items — left; nothing to archive (Phase 1 had no TODO entries); no parked runs
 - [x] 7 Eval deposit — none (no confirmed P0/P1)
 - [x] 8 WORKLOG entry — added (2 entries total, under cap)
-- [ ] 9 Archive run
+- [x] 9 Archive run — Execution state stripped from plan.md; brainstorm/plan/review/wrap set `Status: done`; no spec.md/patch_plan.md/other files to drop; folder kept

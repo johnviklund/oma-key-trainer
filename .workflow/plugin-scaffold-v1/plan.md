@@ -2,28 +2,7 @@ Command: workflow plan plugin-scaffold-v1
 Created: 2026-09-13
 Base: 9ccf23db656590fdeb6a277429249b7ecc7d5c4f
 Inputs: brainstorm.md @ 94d4abe2e2c74ea2d1761ded064c42f4a6bdc8a5 (supersedes plan.md @ f2c5365164d19fe59e51a72c0125925906167f49)
-Status: complete
-
-## Execution state
-
-- Current: all checklist steps complete; ready for Phase 4 review.
-- Writer: OpenAI · GPT-5 (self-declared).
-- Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
-- QA automation: enabled `oma-key-trainer`; list shows `enabled=true`; summon/hide and toggle exit 0; pool has 10 rows.
-- Step 1 @ 09a8f29.
-- Step 2 @ fa38a2b.
-- Step 3 @ 800ddb2.
-- Step 4 @ 30b0acb.
-- In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
-- Uncommitted: this execution receipt only.
-- Pending: none.
-
-Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
-ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
-Decided with the human (2026-09-13): keep the bar-widget shape with the card anchored under the
-icon and the menu row as an optional README snippet (1a); publish as `main` on
-`https://github.com/johnviklund/oma-key-trainer` (2a); id stays `oma-key-trainer`; rename the
-local folder to `~/Work/oma-key-trainer` last.
+Status: done
 
 ## Findings
 

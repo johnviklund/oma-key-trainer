@@ -2,7 +2,7 @@ Command: workflow review plugin-scaffold-v1
 Created: 2026-09-13
 Base: 0ae072205741a4f184624dca9779ae806e33a8bf
 Inputs: plan.md @ 9ccf23db656590fdeb6a277429249b7ecc7d5c4f; brainstorm.md @ 94d4abe2e2c74ea2d1761ded064c42f4a6bdc8a5
-Status: complete
+Status: done
 
 Scope note: the plan's Base 9ccf23d already contains the plugin code shipped by the superseded
 plan (efeccd7 … 9ccf23d); no review ever ran on it. Code diff since plan Base is `KeyTrainer.qml`
