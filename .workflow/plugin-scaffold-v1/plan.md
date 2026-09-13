@@ -10,7 +10,7 @@ Status: complete
 - Step 1 @ efeccd7
 - Step 2 @ 345039d
 - Step 3 @ e62ef06
-- Step 4 @ pending receipt commit
+- Step 4 @ f022de5
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
 - In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
