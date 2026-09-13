@@ -6,12 +6,12 @@ Status: complete
 
 ## Execution state
 
-- Current: Steps 1–8 done; Step 9 is blocked at its real-key manual check; Step 10 follows once Step 9 passes
-- Writer: OpenAI · GPT-5 (self-declared, Steps 1–8)
-- Baseline: validate exit 0; Step 8 model check `l a b d e f g h i j c k 12`; live IPC after shell restart `{"pool":32,"visible":10,"complete":0,"allLearned":false}`
+- Current: Steps 1–9 done; Step 10 is next
+- Writer: OpenAI · GPT-5 (self-declared, Steps 1–9)
+- Baseline: validate exit 0; Step 8 model check `l a b d e f g h i j c k 12`; Step 9 real-key check `{"pool":32,"visible":11,"complete":1,"allLearned":false}`, count ≥11, live-log matches 0
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold, windowSize)`, `allLearned(rows)`; counts contract v1; threshold 10; window 10
-- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32; Step 8 @ 985f702
-- Pending decision: none; Step 9 counts backup restored after the unsuccessful virtual-key attempt (decision 4a: 10-row window, pulled entries inserted at the top)
+- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32; Step 8 @ 985f702; Step 9 @ 9c69ee7
+- Pending decision: none; `/tmp/oma-key-trainer-counts-step9-backup.json` must be restored at the end of Step 10 (decision 4a: 10-row window, pulled entries inserted at the top)
 
 ## Findings
 
@@ -65,9 +65,10 @@ Status: complete
   - Check: `node -e "eval(require('fs').readFileSync('UsageModel.js','utf8')); var p='abcdefghijkl'.split('').map(function(c){return {id:c,action:c.toUpperCase()}}); var r=visibleEntries(p,{C:10,K:10},10,10); console.log(r.map(function(x){return x.id}).join(' '), r.length)" && omarchy-shell shell rescanPlugins && sleep 2 && omarchy-shell oma-key-trainer status` — expect `l a b d e f g h i j c k 12` then `"pool":32,"visible":10,"complete":0` (pre: `a b d e f g h i j l c k 12`; `{"pool":32,"complete":1,"allLearned":false}`)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 9 — Manual QA, AE1 + AE2 + persistence + log: back up `counts.json`; set `"Toggle window split"` to 9 in it; `hyprctl reload` (hook re-reads); open the card; press SUPER+J with the card open → row turns "Complete", dims, drops to the bottom, "Pseudo window" appears at the top (AE1, live 3a); close the card, press SUPER+J again (AE2, counts past 10); `omarchy-restart-shell`, reopen → same rows (R12); log clean (F13)
+- [x] Step 9 — Manual QA, AE1 + AE2 + persistence + log: back up `counts.json`; set `"Toggle window split"` to 9 in it; `hyprctl reload` (hook re-reads); open the card; press SUPER+J with the card open → row turns "Complete", dims, drops to the bottom, "Pseudo window" appears at the top (AE1, live 3a); close the card, press SUPER+J again (AE2, counts past 10); `omarchy-restart-shell`, reopen → same rows (R12); log clean (F13)
   - Check: `omarchy-shell oma-key-trainer status; grep -o '"Toggle window split":1[1-9]' ~/.local/state/omarchy/oma-key-trainer/counts.json | wc -l; grep -i 'oma-key-trainer' /run/user/$(id -u)/quickshell/by-pid/$(pgrep -xo quickshell)/log.log | wc -l` — expect `"visible":11,"complete":1`, `1`, `0` (pre: `{"pool":32,"complete":1,"allLearned":false}`, `0`, `0`)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 10 — Manual QA, AE3 + AE4: append `hl.unbind("SUPER + J")` + `o.bind("SUPER + SHIFT + J", "Toggle window split", hl.dsp.layout("togglesplit"))` to `~/.config/hypr/bindings.lua`, `hyprctl reload`, press SUPER+SHIFT+J → the "Toggle window split" count rises, the row still reads "SUPER + J" (AE3); revert, reload. Then write a counts.json with all 32 pool actions at 10 except "Pseudo window" at 9 (python over `keybindings.json`), `hyprctl reload`, press SUPER+P → "All keybindings learned" replaces the list (AE4); run the check, then restore the Step 9 backup and `hyprctl reload`
   - Check: `omarchy-shell oma-key-trainer status | grep -o '"allLearned":true' | wc -l` (run before restoring the backup) — expect `1` (pre: `0`)
   - Skills: none
@@ -96,6 +97,7 @@ Status: complete
 - Old Step 8: card + restart passed, but its log check hit `1` from the dead `vrxzzalt` runtime (the known 19:00 pre-Step-5 warning) and AE1 could not pass (all 32 rows visible) — re-planned as Steps 8–10 (F12, F13; decision 4a).
 - Step 8: `omarchy-shell shell rescanPlugins` retained the existing kept-loaded service and returned its old status without `visible`; restarting the shell reloaded the service and produced the expected status. The implementation is verified; future hot-reload checks for this service need a shell restart.
 - Step 9: `wtype -M logo -k j -m logo` exited 0 but did not traverse the live `SUPER+J` bind or the Lua hook: service remained `{"pool":32,"visible":10,"complete":0,"allLearned":false}` and the expected counts match was `0`. The original counts backup was restored and `hyprctl reload` passed. Finish this manual step with a physical SUPER+J press while the card is open.
+- Step 9: the sandbox could not resolve the live Quickshell PID for the prescribed log path; the same read-only check in the active desktop environment returned `0` after reopening the card.
 
 ## TODO impacts
 
