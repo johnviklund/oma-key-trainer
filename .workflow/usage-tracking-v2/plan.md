@@ -4,6 +4,17 @@ Base: 34a407d331be44c03ce90cb9397601ed2e2880d9
 Inputs: .workflow/usage-tracking-v2/brainstorm.md @ fda38938f1c4c656f458b12c010de195c396a483, .workflow/usage-tracking-v2/spec.md @ fda38938f1c4c656f458b12c010de195c396a483
 Status: complete
 
+## Execution state
+
+- Current: Step 2 — install and prove the hook live
+- Next: edit `README.md`, then wait for human opt-in/reload/key press before checking
+- Writer: OpenAI · GPT-5 (self-declared)
+- Baseline: `omarchy plugin validate .` exit 0; shell IPC exit 0; plugin present/enabled
+- In flight: counts contract v1 at `~/.local/state/omarchy/oma-key-trainer/counts.json`; `o.bind(keys, description, dispatcher, options)` wrapped
+- Step commits: Step 1 @ 2ee15bb
+- Uncommitted: this execution-state receipt
+- Pending decision: none
+
 ## Findings
 
 | # | What is true | What it changes |
@@ -19,9 +30,10 @@ Status: complete
 
 ## Checklist
 
-- [ ] Step 1 — `hook.lua`: wrap `o.bind` (require `default.hypr.helpers` first); on fire, `pcall` an increment of `counts[description]` and atomic write of counts.json, then dispatch the original (`hl.dispatch` for userdata, call for functions); load existing counts at start via `gmatch` over the flat JSON; `mkdir -p` the state dir; clear `package.loaded[...]` at the end (F2, F3, F5)
+- [x] Step 1 — `hook.lua`: wrap `o.bind` (require `default.hypr.helpers` first); on fire, `pcall` an increment of `counts[description]` and atomic write of counts.json, then dispatch the original (`hl.dispatch` for userdata, call for functions); load existing counts at start via `gmatch` over the flat JSON; `mkdir -p` the state dir; clear `package.loaded[...]` at the end (F2, F3, F5)
   - Check: `luac -p hook.lua && grep -o 'o.bind' hook.lua | wc -l` (pre: `cannot open hook.lua`, exit 1)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 2 — Install + prove the hook live: `README.md` documents the one-line opt-in `require("default.hypr.require_optional").module("omarchy.plugins.oma-key-trainer.hook")` placed before `require("default.hypr.omarchy")` in `~/.config/hypr/hyprland.lua`; the human adds it, runs `hyprctl reload && hyprctl configerrors` (empty), presses SUPER+W once (F3)
   - Check: `test -s ~/.local/state/omarchy/oma-key-trainer/counts.json && grep -o '"Close window"' ~/.local/state/omarchy/oma-key-trainer/counts.json | wc -l` (pre: exit 1)
   - Skills: none
