@@ -12,13 +12,13 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
 
 ## Execution state
 
-- Current: Step 1 done; Step 2 paused — prescribed shell-restart check exited 1 before status
+- Current: Steps 1–2 done; Step 3 ready
 - Writer: OpenAI · GPT-5 (self-declared)
 - Baseline: `omarchy plugin validate .` exit 0; Step 1 count `"Toggle window split":3` → `4` after one physical press
-- Step commits: Step 1 @ 149f08c
-- In flight: `loadPool` now warns before clearing an invalid pool
-- Uncommitted: `UsageService.qml`, `.workflow/usage-tracking-v2/patch_plan.md`
-- Pending: rerun or revise Step 2 check after `omarchy-restart-shell` readiness failure; follow-up IPC status is healthy (`pool:32`)
+- Step commits: Step 1 @ 149f08c; Step 2 @ f811b34
+- In flight: none
+- Uncommitted: `.workflow/usage-tracking-v2/patch_plan.md`
+- Pending: none
 
 ## Checklist
 
@@ -33,10 +33,10 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
   - Check: `luac -p hook.lua && grep -o 'original_bind(keys, description, dispatcher, options)' hook.lua | wc -l` — expect `1` (pre: `0`); then, after the reload + one SUPER+J press, `grep -o '"Toggle window split":[0-9]*' ~/.local/state/omarchy/oma-key-trainer/counts.json` — expect the number to be exactly one higher than before the press (the hook still counts through the unchanged happy path)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 2 — C1-3 · `UsageService.qml`: in `loadPool`'s `catch (error)` branch, add `console.warn("oma-key-trainer: keybindings.json parse failed: " + error)` before `root.poolEntries = []`. Nothing else changes.
+- [x] Step 2 — C1-3 · `UsageService.qml`: in `loadPool`'s `catch (error)` branch, add `console.warn("oma-key-trainer: keybindings.json parse failed: " + error)` before `root.poolEntries = []`. Nothing else changes.
   - Check: `grep -o 'console.warn' UsageService.qml | wc -l && omarchy plugin validate . && omarchy-restart-shell && sleep 3 && omarchy-shell oma-key-trainer status` — expect `1` (pre: `0`), validate exit 0, then a JSON line containing `"pool":32` (the service still loads)
   - Skills: none
-  - Writer: —
+  - Writer: OpenAI · GPT-5
 - [ ] Step 3 — C1-1 · `UsageService.qml`: `refresh()` gains `stateDirWatcher.reload()` as its last statement (after `countsFile.reload()`), so every card open recreates the directory watch (same pattern as `/usr/share/omarchy/shell/plugins/services/idle/Service.qml:308`). Nothing else changes.
   - Check: `grep -o 'stateDirWatcher.reload()' UsageService.qml | wc -l && omarchy plugin validate . && omarchy-restart-shell && sleep 3 && omarchy-shell oma-key-trainer status && grep -ic 'oma-key-trainer' /run/user/$(id -u)/quickshell/by-pid/$(pgrep -xo quickshell)/log.log` — expect `1` (pre: `0`), validate exit 0, a JSON line containing `"pool":32`, then `0` (no plugin warning from the reload of a directory path — `printErrors: false` is already set)
   - Skills: none
@@ -49,7 +49,7 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
 
 ## Deviations
 
-- Step 2: `console.warn` count was `1` and validation passed, but `omarchy-restart-shell` exited 1 with `Omarchy shell did not become ready after restart.` The immediate follow-up IPC status returned `{"pool":32,"visible":11,"complete":1,"allLearned":false}` and `hyprctl configerrors` was empty; stopped without committing `UsageService.qml` because the prescribed check itself failed.
+- Step 2: the first two restart checks were mistakenly run inside the executor sandbox, so the helper's internal `omarchy-shell shell ping` could not see the session and returned `Omarchy shell did not become ready after restart.` After confirming the sandbox false negative, the required unsandboxed restart and status check passed with `{"pool":32,"visible":12,"complete":2,"allLearned":false}`.
 
 ## After the last step
 
