@@ -4,6 +4,16 @@ Base: 9ccf23db656590fdeb6a277429249b7ecc7d5c4f
 Inputs: brainstorm.md @ 94d4abe2e2c74ea2d1761ded064c42f4a6bdc8a5 (supersedes plan.md @ f2c5365164d19fe59e51a72c0125925906167f49)
 Status: complete
 
+## Execution state
+
+- Current: Step 2 — manual QA; Step 1 complete.
+- Writer: OpenAI · GPT-5 (self-declared).
+- Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
+- Step 1 @ 09a8f29.
+- In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
+- Uncommitted: this execution receipt only.
+- Pending decision: none.
+
 Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
 ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
 Decided with the human (2026-09-13): keep the bar-widget shape with the card anchored under the
@@ -26,9 +36,10 @@ local folder to `~/Work/oma-key-trainer` last.
 
 ## Checklist
 
-- [ ] Step 1 — Commit the top-right card anchoring in `KeyTrainer.qml` (F5)
+- [x] Step 1 — Commit the top-right card anchoring in `KeyTrainer.qml` (F5)
   - Check: `git show HEAD:KeyTrainer.qml | grep -o 'anchors.rightMargin: Style.gapsOut' | wc -l` (pre: 0 → expect 1) paired guard: `git diff --quiet -- KeyTrainer.qml; echo $?` (pre: 1 → expect 0)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 2 — Manual QA (R1–R3) on the bar-widget shape: click the bar icon → card opens top-right under it with all 10 pool rows; Escape and click-outside close it; `omarchy-shell shell toggle oma-key-trainer '{}'` opens and closes it (menu-row path); colors match the current theme; no `console.warn` mentioning `oma-key-trainer` in the shell output. Paste what was seen into this file's execution state (F3)
   - Check: `omarchy-shell shell summon oma-key-trainer '{}'; omarchy-shell shell hide oma-key-trainer` (pre: `ok` / exit 0 — already runnable; the step's deliverable is the pasted observation, not a changed exit code)
   - Skills: none
