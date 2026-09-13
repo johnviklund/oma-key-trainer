@@ -1,0 +1,80 @@
+-- Standalone harness for hook.lua: stub Omarchy's `o` and Hyprland's `hl`.
+local calls = { bind = {}, dispatch = {} }
+local fake_dispatcher = io.stdout -- a real userdata, standing in for HL.Dispatcher
+
+package.preload["default.hypr.helpers"] = function()
+  o = o or {}
+  o.shell_quote = function(v) return "'" .. tostring(v):gsub("'", "'\\''") .. "'" end
+  o.launch = function(c) return "uwsm-app -- " .. c end
+  o.launch_sole = function(m, c) return "omarchy-launch-or-focus " .. m .. " " .. c end
+  o.launch_webapp = function(u) return "omarchy-launch-webapp " .. u end
+  o.launch_webapp_sole = function(n, u) return "omarchy-launch-or-focus-webapp " .. n .. " " .. u end
+  o.bind = function(keys, description, dispatcher, options)
+    calls.bind[#calls.bind + 1] = { keys = keys, description = description, dispatcher = dispatcher, options = options }
+  end
+  return true
+end
+hl = { dsp = { exec_cmd = function(cmd) return fake_dispatcher end }, dispatch = function(d) calls.dispatch[#calls.dispatch + 1] = d; return "dispatched" end }
+
+local stock_bind_before_hook
+require("default.hypr.helpers")
+stock_bind_before_hook = o.bind
+
+local function load_hook()
+  return dofile(arg[1])
+end
+
+local function expect(cond, msg) if not cond then error("FAIL: " .. msg, 2) end print("ok   " .. msg) end
+local function last_bind() return calls.bind[#calls.bind] end
+
+local ret = load_hook()
+expect(ret == false, "hook returns false (require_optional contract)")
+expect(o.bind ~= stock_bind_before_hook, "o.bind is wrapped")
+expect(o._oma_key_trainer_hook.original == stock_bind_before_hook, "original captured")
+
+-- 1. Unknown table shape -> untracked fallback: stock o.bind gets the ORIGINAL table, not a run wrapper
+local unknown = { future_shape = "x" }
+local opts = { repeating = true }
+o.bind("SUPER + Q", "Future thing", unknown, opts)
+expect(last_bind().dispatcher == unknown, "C1-2: unknown table passed through to stock o.bind unchanged")
+expect(last_bind().options == opts and last_bind().description == "Future thing", "C1-2: keys/description/options forwarded verbatim")
+
+-- 2. nil dispatcher -> also falls back (type nil)
+o.bind("SUPER + N", "Nil thing", nil, nil)
+expect(last_bind().dispatcher == nil, "C1-2: nil dispatcher falls back to stock o.bind")
+
+-- 3. string -> exec_cmd userdata -> tracked run wrapper; pressing records + dispatches
+o.bind("SUPER + SPACE", "Omarchy menu", "omarchy-menu", nil)
+expect(type(last_bind().dispatcher) == "function", "string dispatcher is wrapped (tracked)")
+local r = last_bind().dispatcher()
+expect(r == "dispatched" and calls.dispatch[#calls.dispatch] == fake_dispatcher, "run() dispatches the resolved HL.Dispatcher and returns hl.dispatch's result")
+
+-- 4. known table shape -> string -> tracked
+o.bind("SUPER + B", "Web browser", { omarchy = "browser" }, nil)
+expect(type(last_bind().dispatcher) == "function", "{omarchy=} table is wrapped (tracked)")
+
+-- 5. userdata (hl.dsp.*) -> tracked
+o.bind("SUPER + J", "Toggle window split", fake_dispatcher, nil)
+expect(type(last_bind().dispatcher) == "function", "HL.Dispatcher userdata is wrapped (tracked)")
+last_bind().dispatcher()
+
+-- 6. function dispatcher -> tracked; args pass through; return value preserved
+local got
+o.bind("SUPER + C", "Universal copy", function(...) got = select("#", ...); return "fn-result" end, nil)
+expect(type(last_bind().dispatcher) == "function", "function dispatcher is wrapped (tracked)")
+expect(last_bind().dispatcher(1, 2, 3) == "fn-result" and got == 3, "run() forwards args and return value to a function dispatcher")
+
+-- 7. counts persisted for the tracked presses only (menu x1, split x1, copy x1); untracked never recorded
+local f = assert(io.open(os.getenv("HOME") .. "/.local/state/omarchy/oma-key-trainer/counts.json"))
+local json = f:read("*a"); f:close()
+print("     counts.json = " .. json:gsub("\n", ""))
+expect(json:find('"Omarchy menu":1', 1, true) and json:find('"Toggle window split":1', 1, true) and json:find('"Universal copy":1', 1, true), "tracked presses recorded once each")
+expect(not json:find("Future thing", 1, true) and not json:find("Nil thing", 1, true), "untracked fallback binds never recorded")
+
+-- 8. reload path: loading the hook again keeps a single wrapper layer over the stock bind
+calls.bind = {}
+load_hook()
+expect(o._oma_key_trainer_hook.original == stock_bind_before_hook, "reload: original still the stock o.bind (no double wrap)")
+o.bind("SUPER + Z", "Zed", { another_unknown = true }, nil)
+expect(#calls.bind == 1 and last_bind().dispatcher.another_unknown == true, "reload: fallback still reaches stock o.bind exactly once")
+print("ALL OK")
