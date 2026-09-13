@@ -6,15 +6,16 @@ Status: complete
 
 ## Execution state
 
-- Current: Step 3 — publish blocked by GitHub authentication; Steps 1–2 complete.
+- Current: Step 4 — rename the local folder and repoint the dev symlink; Steps 1–3 complete.
 - Writer: OpenAI · GPT-5 (self-declared).
 - Baseline: `omarchy plugin validate .` exit 0, no output; no automated test or lint harness exists.
 - QA automation: enabled `oma-key-trainer`; list shows `enabled=true`; summon/hide and toggle exit 0; pool has 10 rows.
 - Step 1 @ 09a8f29.
 - Step 2 @ fa38a2b.
+- Step 3 @ 800ddb2.
 - In flight: `KeyTrainer.qml` card anchors top/right with `Style.gapsOut`; height cap `Style.space(640)`.
 - Uncommitted: this execution receipt only.
-- Pending: re-authenticate `gh` as `johnviklund`, then publish `main` to `johnviklund/oma-key-trainer`.
+- Pending: move the repo to `/home/johnviklund/Work/oma-key-trainer`, repoint its dev symlink, and rescan the shell.
 
 Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
 ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
@@ -46,9 +47,10 @@ local folder to `~/Work/oma-key-trainer` last.
   - Check: `omarchy-shell shell summon oma-key-trainer '{}'; omarchy-shell shell hide oma-key-trainer` (pre: `ok` / exit 0 — already runnable; the step's deliverable is the pasted observation, not a changed exit code)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 3 — Publish: `gh auth setup-git && git branch -m master main && git checkout main && git merge --ff-only fix/top-right-trainer-widget && git branch -d fix/top-right-trainer-widget && git remote add origin https://github.com/johnviklund/oma-key-trainer.git && git push -u origin main` (F6)
+- [x] Step 3 — Publish: `gh auth setup-git && git branch -m master main && git checkout main && git merge --ff-only fix/top-right-trainer-widget && git branch -d fix/top-right-trainer-widget && git remote add origin https://github.com/johnviklund/oma-key-trainer.git && git push -u origin main` (F6)
   - Check: `git rev-parse --abbrev-ref HEAD; git ls-remote --heads https://github.com/johnviklund/oma-key-trainer.git main | wc -l` (pre: `fix/top-right-trainer-widget` / 0 → expect `main` / 1)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 4 — Rename the local folder and re-point the dev symlink, last: `mv ~/Work/plugin-keys-helper ~/Work/oma-key-trainer && ln -sfn ~/Work/oma-key-trainer ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins` — then reopen the session in `~/Work/oma-key-trainer` (F7)
   - Check: `readlink -f ~/.config/omarchy/plugins/oma-key-trainer; omarchy-shell shell listPlugins | jq -e '.[] | select(.id=="oma-key-trainer") | .enabled'` (pre: `/home/johnviklund/Work/plugin-keys-helper` / `true` → expect `/home/johnviklund/Work/oma-key-trainer` / `true`)
   - Skills: none
@@ -72,7 +74,7 @@ local folder to `~/Work/oma-key-trainer` last.
 ## Deviations
 
 - The sandbox cannot access the user session bus; outside it, `omarchy-shell` commands reach the running shell normally. QA completed through that session.
-- Step 3 preflight: `gh auth status` reports the active `johnviklund` token is invalid, so `gh auth setup-git` and the first push cannot proceed until an interactive `gh auth login -h github.com` succeeds.
+- Step 3 initially found an invalid token; after re-authentication, `main` fast-forwarded to the feature branch and pushed successfully.
 
 ## TODO impacts
 
