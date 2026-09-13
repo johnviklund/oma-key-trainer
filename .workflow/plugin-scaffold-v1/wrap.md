@@ -16,5 +16,5 @@ Anthropic · Opus 5 (human kept the reviewer model) instead of ROUTING.md's Sonn
 - [x] 5 Product-doc truth — PRODUCT.md: current state → v1 built+published, v1 entry point → bar icon (+optional menu row), id decision resolved `oma-key-trainer`, install URL concrete; DESIGN.md: UI shape, kit components as shipped (+C1-1 gap noted, non-goal kept), open/close interaction; ROADMAP.md: Phase 1 ×3 checked, wording bar widget; AGENTS.md: manual-QA trigger + R1–R3 (v1) / AE1–AE4 (v2)
 - [x] 6 TODO hygiene — added the one human-deferred item (C1-1 + C1-3, C1-2/C1-4 as tag-alongs) under "Deferred from runs"; the two open questions are v2 questions, not duplicates of Phase 2 roadmap items — left; nothing to archive (Phase 1 had no TODO entries); no parked runs
 - [x] 7 Eval deposit — none (no confirmed P0/P1)
-- [ ] 8 WORKLOG entry
+- [x] 8 WORKLOG entry — added (2 entries total, under cap)
 - [ ] 9 Archive run
