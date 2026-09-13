@@ -8,9 +8,16 @@
   "homepage": "https://github.com/johnviklund/oma-key-trainer",
   "repository": "https://github.com/johnviklund/oma-key-trainer",
   "kinds": [
-    "overlay"
+    "bar-widget"
   ],
   "entryPoints": {
-    "overlay": "KeyTrainer.qml"
+    "barWidget": "BarWidget.qml"
+  },
+  "barWidget": {
+    "displayName": "Keybindings Trainer",
+    "description": "Open the Keybindings Trainer",
+    "category": "Compositor",
+    "allowMultiple": false,
+    "defaultSection": "right"
   }
 }

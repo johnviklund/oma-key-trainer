@@ -1,7 +1,7 @@
 # Omarchy Keybindings Trainer
 
 An Omarchy shell plugin that helps you learn Hyprland/Omarchy keybindings: v1 shows a curated
-reference list from the top-right menu; v2 tracks real usage in the background and rotates in
+reference list from a dedicated top-right bar icon; v2 tracks real usage in the background and rotates in
 new bindings as you master the current ones.
 
 | Doc | What it holds |
@@ -22,8 +22,10 @@ Built with the `workflow` skill (brainstorm → plan → execute → review → 
 omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable
 ```
 
+The trainer icon is added to the right side of the bar, immediately after the system tray.
+
 Add this row to `~/.config/omarchy/extensions/omarchy-menu.jsonc` to make the
-trainer available from the Learn menu:
+trainer available from the main menu's Learn submenu as well:
 
 ```jsonc
 {
