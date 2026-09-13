@@ -24,7 +24,7 @@ Item {
   property int rowHeight: Math.max(Style.space(42), Style.font.body + Style.spacing.rowPaddingX * 2)
   property int keyColumnWidth: Style.space(180)
   readonly property int cardWidth: Math.min(Style.space(640), panel.width - Style.gapsOut * 2)
-  readonly property int cardHeight: Math.min(Style.space(480), panel.height - Style.gapsOut * 2)
+  readonly property int cardHeight: Math.min(Style.space(640), panel.height - Style.gapsOut * 2)
 
   function open(payloadJson) {
     root.opened = true
@@ -95,7 +95,10 @@ Item {
       width: root.cardWidth
       height: root.cardHeight
       radius: Style.cornerRadius
-      anchors.centerIn: parent
+      anchors.top: parent.top
+      anchors.right: parent.right
+      anchors.topMargin: Style.gapsOut
+      anchors.rightMargin: Style.gapsOut
       color: root.background
       borderSpec: root.borderSpec
       padding: Style.spacing.panelPadding
