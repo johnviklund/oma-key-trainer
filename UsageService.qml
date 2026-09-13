@@ -49,6 +49,7 @@ Item {
   function refresh() {
     keybindingsFile.reload()
     countsFile.reload()
+    stateDirWatcher.reload()
   }
 
   function statusJson() {
