@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "id": "oma-key-trainer",
+  "name": "Keybindings Trainer",
+  "version": "0.1.0",
+  "author": "John Viklund",
+  "description": "A curated reference for Omarchy keybindings",
+  "homepage": "https://github.com/johnviklund/oma-key-trainer",
+  "repository": "https://github.com/johnviklund/oma-key-trainer",
+  "kinds": [
+    "overlay"
+  ],
+  "entryPoints": {
+    "overlay": "KeyTrainer.qml"
+  }
+}
