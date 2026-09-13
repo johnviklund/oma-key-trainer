@@ -1,10 +1,10 @@
 Command: workflow review usage-tracking-v2
 Created: 2026-09-13
-Base: e36b0e484201162e549e3f05ab842a3f9ed3b4ec
+Base: aa3eed535687c441601f28e1a78f7a6c0e2cd314
 Inputs: .workflow/usage-tracking-v2/plan.md @ 3afd4a490a34c8971ae46da1c23e0ca9f871a303
-Status: complete
+Status: drafting
 
-Reviewed diff: `fda38938..e36b0e48` (the whole run — Steps 1–7 were committed before the re-plan
+Cycle 1 reviewed diff: `fda38938..e36b0e48`; cycle 2 reviews `e36b0e48..aa3eed53` (patch cycle 1 fixes only). Cycle 1 reviewed the whole run — Steps 1–7 were committed before the re-plan
 at `3afd4a4`; the plan's own Base only covers Step 8). Code files: `hook.lua`, `keybindings.json`,
 `UsageModel.js`, `UsageService.qml`, `BarWidget.qml`, `KeyTrainer.qml`, `manifest.json`; receipt:
 `README.md`.
@@ -67,3 +67,16 @@ Independence: cross-vendor — writer OpenAI · GPT-5 (plan `## Execution state`
 
 ## Cycle 1 verdict
 **Patch, then re-review.** 0 P0 · 0 P1 · 2 P2 · 3 P3. The run delivers all four brainstorm scope items and touches no non-goal; the event source, persistence, window rule and all-learned state are correct and were human-verified (AE1–AE4). Both P2s are robustness gaps with one-to-five-line fixes (C1-1 `UsageService.qml`, C1-2 `hook.lua`); C1-3 is a one-line repeat of a v1 finding. Recommended: fix C1-1, C1-2, C1-3 now; defer C1-4; wontfix C1-5. Patch plan: `patch_plan.md` (lighter, P2/P3 only). No test file exists to protect the fixes; the patch checks are grep-presence plus the live status/keypress checks the plan already uses.
+
+## Cycle 2 coverage (re-review of patch cycle 1 — C1-1, C1-2, C1-3; nothing else re-implemented)
+- [ ] Patch scope: `git diff --stat e36b0e48..HEAD -- . ':(exclude)*.md' ':(exclude)*.txt'` is exactly `UsageService.qml` + `hook.lua` (no test files exist; no other code touched)
+- [ ] C1-2 fix @ 149f08c — `hook.lua` untracked fallback: placement, `original_bind` in scope, return-value parity with stock `o.bind`, happy path unchanged
+- [ ] C1-3 fix @ f811b34 — `UsageService.qml` `loadPool` catch warns once, still resets `poolEntries`
+- [ ] C1-1 fix @ 003a734 — `UsageService.qml` `refresh()` ends with `stateDirWatcher.reload()`; id resolvable; directory-path reload is warning-free
+- [ ] Deferred/wontfix reasoning still holds: C1-4 (defer), C1-5 (wontfix) — confirm, do not implement
+- [ ] patch_plan.md Deviations (Step 2 sandbox false negative; Step 3 `grep -c` exit-1 check) — assess
+- [ ] `.workflow/` dependency grep → still no hits
+- [ ] Regression at HEAD: `luac -p hook.lua`; `omarchy plugin validate .` exit 0; UsageModel.js node checks; `hyprctl configerrors` empty; live `omarchy-shell oma-key-trainer status`; live shell log 0 plugin lines; running shell/Hyprland actually carry the patched code
+Independence: cross-vendor — patch writer OpenAI · GPT-5 (patch_plan.md `## Execution state` + per-step `Writer:`); reviewer Anthropic · Opus 5
+
+## Cycle 2 findings
