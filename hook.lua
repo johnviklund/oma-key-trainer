@@ -134,6 +134,11 @@ local original_bind = o.bind
 local function tracked_bind(keys, description, dispatcher, options)
   local resolved_dispatcher = resolve_dispatcher(dispatcher, description)
 
+  if type(resolved_dispatcher) ~= "function" and type(resolved_dispatcher) ~= "userdata" then
+    original_bind(keys, description, dispatcher, options)
+    return
+  end
+
   local function run(...)
     if description then
       pcall(record, description)
