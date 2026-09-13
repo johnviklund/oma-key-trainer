@@ -12,13 +12,17 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
 
 ## Execution state
 
-- Current: not started
-- Writer: —
-- Step commits: —
+- Current: Step 1 done; Step 2 ready
+- Writer: OpenAI · GPT-5 (self-declared)
+- Baseline: `omarchy plugin validate .` exit 0; Step 1 count `"Toggle window split":3` → `4` after one physical press
+- Step commits: Step 1 @ 149f08c
+- In flight: none
+- Uncommitted: `.workflow/usage-tracking-v2/patch_plan.md`
+- Pending: none
 
 ## Checklist
 
-- [ ] Step 1 — C1-2 · `hook.lua`: in `tracked_bind`, right after `local resolved_dispatcher = resolve_dispatcher(dispatcher, description)`, add an untracked fallback for shapes the hook cannot run itself:
+- [x] Step 1 — C1-2 · `hook.lua`: in `tracked_bind`, right after `local resolved_dispatcher = resolve_dispatcher(dispatcher, description)`, add an untracked fallback for shapes the hook cannot run itself:
   ```lua
   if type(resolved_dispatcher) ~= "function" and type(resolved_dispatcher) ~= "userdata" then
     original_bind(keys, description, dispatcher, options)
@@ -28,7 +32,7 @@ a kept-loaded service only picks up QML edits after `omarchy-restart-shell` (rev
   Nothing else in the file changes. Then the human runs `hyprctl reload && hyprctl configerrors` (empty output) and presses SUPER+J once.
   - Check: `luac -p hook.lua && grep -o 'original_bind(keys, description, dispatcher, options)' hook.lua | wc -l` — expect `1` (pre: `0`); then, after the reload + one SUPER+J press, `grep -o '"Toggle window split":[0-9]*' ~/.local/state/omarchy/oma-key-trainer/counts.json` — expect the number to be exactly one higher than before the press (the hook still counts through the unchanged happy path)
   - Skills: none
-  - Writer: —
+  - Writer: OpenAI · GPT-5
 - [ ] Step 2 — C1-3 · `UsageService.qml`: in `loadPool`'s `catch (error)` branch, add `console.warn("oma-key-trainer: keybindings.json parse failed: " + error)` before `root.poolEntries = []`. Nothing else changes.
   - Check: `grep -o 'console.warn' UsageService.qml | wc -l && omarchy plugin validate . && omarchy-restart-shell && sleep 3 && omarchy-shell oma-key-trainer status` — expect `1` (pre: `0`), validate exit 0, then a JSON line containing `"pool":32` (the service still loads)
   - Skills: none
