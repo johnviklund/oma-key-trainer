@@ -6,11 +6,11 @@ Status: complete
 
 ## Execution state
 
-- Current: Steps 1–7 done; Step 8 (window) is next, then QA Steps 9–10
-- Writer: OpenAI · GPT-5 (self-declared, Steps 1–7)
-- Baseline: validate exit 0; live IPC `{"pool":32,"complete":1,"allLearned":false}`; card renders counts; counts survive `omarchy-restart-shell`
+- Current: Steps 1–8 done; Step 9 (AE1/AE2, persistence, log) is next, then QA Step 10
+- Writer: OpenAI · GPT-5 (self-declared, Steps 1–8)
+- Baseline: validate exit 0; Step 8 model check `l a b d e f g h i j c k 12`; live IPC after shell restart `{"pool":32,"visible":10,"complete":0,"allLearned":false}`
 - In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold, windowSize)`, `allLearned(rows)`; counts contract v1; threshold 10; window 10
-- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32
+- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32; Step 8 @ 985f702
 - Pending decision: none (decision 4a 2026-09-13: 10-row window, pulled entries inserted at the top)
 
 ## Findings
@@ -61,9 +61,10 @@ Status: complete
   - Check: `grep -o 'usageService' KeyTrainer.qml | wc -l; grep -o 'FileView' KeyTrainer.qml | wc -l` — expect ≥ 3 and 0 (pre: `0`, `1`)
   - Skills: none
   - Writer: OpenAI · GPT-5
-- [ ] Step 8 — `UsageModel.js` `visibleEntries(pool, counts, threshold, windowSize)` per F12 (window 10, pulled rows on top); `UsageService.qml`: pass `windowSize`, `statusJson()` gains `visible` (row count) and `pool` becomes `poolEntries.length` (F7, F12)
+- [x] Step 8 — `UsageModel.js` `visibleEntries(pool, counts, threshold, windowSize)` per F12 (window 10, pulled rows on top); `UsageService.qml`: pass `windowSize`, `statusJson()` gains `visible` (row count) and `pool` becomes `poolEntries.length` (F7, F12)
   - Check: `node -e "eval(require('fs').readFileSync('UsageModel.js','utf8')); var p='abcdefghijkl'.split('').map(function(c){return {id:c,action:c.toUpperCase()}}); var r=visibleEntries(p,{C:10,K:10},10,10); console.log(r.map(function(x){return x.id}).join(' '), r.length)" && omarchy-shell shell rescanPlugins && sleep 2 && omarchy-shell oma-key-trainer status` — expect `l a b d e f g h i j c k 12` then `"pool":32,"visible":10,"complete":0` (pre: `a b d e f g h i j l c k 12`; `{"pool":32,"complete":1,"allLearned":false}`)
   - Skills: none
+  - Writer: OpenAI · GPT-5
 - [ ] Step 9 — Manual QA, AE1 + AE2 + persistence + log: back up `counts.json`; set `"Toggle window split"` to 9 in it; `hyprctl reload` (hook re-reads); open the card; press SUPER+J with the card open → row turns "Complete", dims, drops to the bottom, "Pseudo window" appears at the top (AE1, live 3a); close the card, press SUPER+J again (AE2, counts past 10); `omarchy-restart-shell`, reopen → same rows (R12); log clean (F13)
   - Check: `omarchy-shell oma-key-trainer status; grep -o '"Toggle window split":1[1-9]' ~/.local/state/omarchy/oma-key-trainer/counts.json | wc -l; grep -i 'oma-key-trainer' /run/user/$(id -u)/quickshell/by-pid/$(pgrep -xo quickshell)/log.log | wc -l` — expect `"visible":11,"complete":1`, `1`, `0` (pre: `{"pool":32,"complete":1,"allLearned":false}`, `0`, `0`)
   - Skills: none
@@ -93,6 +94,7 @@ Status: complete
 - Old Step 5's check failed after its prescribed edit: `omarchy plugin validate .` reported `entry point file not found: 'UsageService.qml'` — resolved by this re-plan (F9): merged into the new Step 5.
 - Step 5's first IPC attempt was blocked by the executor sandbox (`omarchy-shell is not running`); the required rescan and status check then passed against the active desktop session with elevated sandbox access.
 - Old Step 8: card + restart passed, but its log check hit `1` from the dead `vrxzzalt` runtime (the known 19:00 pre-Step-5 warning) and AE1 could not pass (all 32 rows visible) — re-planned as Steps 8–10 (F12, F13; decision 4a).
+- Step 8: `omarchy-shell shell rescanPlugins` retained the existing kept-loaded service and returned its old status without `visible`; restarting the shell reloaded the service and produced the expected status. The implementation is verified; future hot-reload checks for this service need a shell restart.
 
 ## TODO impacts
 
