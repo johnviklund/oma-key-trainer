@@ -1,85 +1,59 @@
 Command: workflow plan plugin-scaffold-v1
 Created: 2026-09-13
-Base: f2c5365164d19fe59e51a72c0125925906167f49
-Inputs: brainstorm.md @ 94d4abe2e2c74ea2d1761ded064c42f4a6bdc8a5
+Base: 9ccf23db656590fdeb6a277429249b7ecc7d5c4f
+Inputs: brainstorm.md @ 94d4abe2e2c74ea2d1761ded064c42f4a6bdc8a5 (supersedes plan.md @ f2c5365164d19fe59e51a72c0125925906167f49)
 Status: complete
 
-## Execution state
-
-- Current: Step 6 — manual QA of the menu and overlay.
-- Step 1 @ efeccd7
-- Step 2 @ 345039d
-- Step 3 @ e62ef06
-- Step 4 @ f022de5
-- Step 5 @ 83164b9
-- Writer: OpenAI · GPT-5 (self-declared)
-- Baseline: `omarchy plugin validate .` fails as expected (missing manifest); no automated QML test or lint harness is installed.
-- In flight: plugin id `oma-key-trainer`; overlay entry point `KeyTrainer.qml`; data shape `{id, keys, description}`.
-- Uncommitted: none.
-- Pending: none.
-
-Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution repo
-`https://github.com/johnviklund/oma-key-trainer`; menu row `learn.keybindings-trainer`, label
-"Keybindings Trainer".
+Re-plan: the previous plan's Steps 1–5 shipped (efeccd7 … 83164b9, see F1); its Step 6 (QA) never
+ran, and HEAD 9ccf23d pivoted the plugin from a menu-summoned overlay to a top-right bar widget.
+Decided with the human (2026-09-13): keep the bar-widget shape with the card anchored under the
+icon and the menu row as an optional README snippet (1a); publish as `main` on
+`https://github.com/johnviklund/oma-key-trainer` (2a); id stays `oma-key-trainer`; rename the
+local folder to `~/Work/oma-key-trainer` last.
 
 ## Findings
 
-| # | What is true (verified against the live install) | What it changes |
+| # | What is true (verified against the live install / repo) | What it changes |
 |---|---|---|
-| F1 | `qs.Ui/Panel` is the *bar-widget popup* base (`PanelController`, `IpcHandler`, `bar` binding — `Ui/Panel.qml`). Overlays (Emojis, Clipboard) use `PanelWindow` + `BorderSurface` with `Color.menu.*` tokens. `PanelHero`/`PanelSectionHeader`/`PanelSeparator` are plain Items and work inside either. | The card is `PanelWindow` → scrim → `BorderSurface`; `Panel` is not used. DESIGN.md wording is stale (see Product doc impacts). |
-| F2 | Overlay contract (`shell.qml:1152-1275`): the root Item must expose `property bool opened`, `open(payloadJson)`, `close()`; may declare `shell`, `manifest`, `omarchyPath` for injection. Third-party `shell` is a facade whose `hide(ownId)` works (`services/PluginShellApi.qml`). Dismiss = `shell.hide(manifest.id)`, as Emojis does. | Step 2 shape. |
-| F3 | `omarchy-plugin-validate` refuses any symlink under the folder and, run on a symlinked *path*, reports the symlink itself and fails (tested). The shell's scan (`"$dir"/*/` glob) does discover a symlinked plugin dir; `inotifywait -r` does not follow it, so hot-reload will not fire — `omarchy-shell shell rescanPlugins` is required after edits. | Validate runs on the repo path; dev loop = symlink + manual rescan. |
-| F4 | Id rules: `^[A-Za-z0-9][A-Za-z0-9._-]*$`, no `..`, not `omarchy.*`; ids are never rewritten (`Util.canonicalWidgetId` is identity). `oma-key-trainer` passes. `omarchy plugin add` clones into `~/.config/omarchy/plugins/<id>/` and needs `manifest.json` at the repo root. | Plugin files live at this repo's root, not a subfolder. |
-| F5 | The menu reads exactly two files (`plugins/menu/Menu.qml:50-51`): the default jsonc and `~/.config/omarchy/extensions/omarchy-menu.jsonc`. No manifest field contributes menu rows. The user extension file currently holds only comments (brainstorm's "already-populated" is off — ours is the first live row). | The menu row is user config outside the repo; the repo ships it as a documented README snippet. |
-| F6 | Plugin-local data is loaded with `FileView { path: Qt.resolvedUrl("x.json").toString().replace(/^file:\/\//, "") }` (radio-atlas) — first-party Emojis uses `omarchyPath` instead, which a third-party plugin cannot. | Curated pool = `keybindings.json` at plugin root, fields `id` (stable slug v2 will count against), `keys`, `description`. |
-| F7 | Authoritative source for default combos + descriptions: `/usr/share/omarchy/default/hypr/bindings/*.lua` (`o.bind("SUPER + W", "Close window", …)`). | Curate from there; display text = shipped default (R7 groundwork). |
-| F8 | `omarchy-shell shell summon <id> '{}'` returns `ok`/`unknown` and refuses a disabled plugin — a runnable load check. `AGENTS.md`'s "walk AE1–AE4" is v2-only (all four cover R5/R7/R8/R11); v1 QA is R1–R3. | Step 6 check; AGENTS.md note under Product doc impacts. |
-| F9 | `keepLoaded: true` keeps the instance across hot-reload so code changes need a shell restart (`shell/README.md`). | Omit `keepLoaded` in v1; load on summon. |
+| F1 | Shipped and enabled: `keybindings.json` (10 rows), `manifest.json` id `oma-key-trainer`, `KeyTrainer.qml` card, README install section, menu row in `~/.config/omarchy/extensions/omarchy-menu.jsonc`; `omarchy plugin validate .` exits 0; `listPlugins` shows `enabled: true`, placed in `shell.json` right section after `omarchy.tray`. | No scaffold/render steps remain; this plan is QA + publish + rename. |
+| F2 | `manifest.json` now `kinds: ["bar-widget"]`, `entryPoints.barWidget: "BarWidget.qml"`, `barWidget.defaultSection: "right"` (a real field — `services/PluginRegistry.qml:73`). `BarWidget.qml` extends `qs.Ui/BarWidget`, `Loader`s `KeyTrainer.qml` and exposes `opened`/`open()`/`close()`. | The overlay contract from the old plan is gone; the card is owned by the widget, not the shell's panel loader. |
+| F3 | For a bar-widget-only plugin the shell routes `summon`/`hide`/`toggle` to the live bar instance (`shell.qml` `isBarWidgetPanelPlugin` → `Bar.qml:744 summonBarWidget` → `item.open()`; `hide` → `item.close()`). `omarchy-shell shell summon oma-key-trainer '{}'` prints `ok`; `hide` prints nothing, exit 0. | The README menu row (`omarchy-shell shell toggle oma-key-trainer '{}'`) still works without an `overlay` kind — only while the icon is in the bar layout. |
+| F4 | `KeyTrainer.dismiss()` calls `shell.hide(manifest.id \|\| "oma-key-trainer")`; in the widget path `manifest` is never injected (falls back to the literal id) and `shell` is `bar.shell` — the full shell, no facade. Works via F3. | No change needed; note for v2 if the widget ever gets a facade. |
+| F5 | Uncommitted `KeyTrainer.qml` diff: card anchored `top`/`right` with `Style.gapsOut` margins, height cap `Style.space(480)` → `Style.space(640)`. Colors/spacing still all `Color.menu.*`/`Style`. | Step 1 commits it as the intended v1 look (decision 1a). |
+| F6 | Git: HEAD on `fix/top-right-trainer-widget` = `master` + 1 commit (fast-forwardable); no `main`; no `origin`; `init.defaultBranch=master`. GitHub `johnviklund/oma-key-trainer` exists, public, empty (`isEmpty: true`, no default branch). `gh` is logged in as `johnviklund` over https, but git has **no credential helper** — `gh auth setup-git` is required before the first push. | Step 3 shape. |
+| F7 | `~/.config/omarchy/plugins/oma-key-trainer` → symlink to `/home/johnviklund/Work/plugin-keys-helper`; the shell scan follows it but `inotifywait` does not, so a rescan is manual. `omarchy plugin add <url> --enable` clones into that same path on a fresh machine (`omarchy-plugin-add:120`). | Step 4 must re-point the symlink and rescan; the dev loop stays symlink-based. |
+| F8 | `PRODUCT.md` ("reachable from Omarchy's existing top-right menu", "Current: not yet built", "id — not yet chosen") and `DESIGN.md` ("summoned from a menu action", "build the box from `Panel`") describe the pre-pivot shape. | Product doc impacts below; wrap edits them, not a step. |
 
 ## Checklist
 
-- [x] Step 1 — Author the curated pool `keybindings.json`: array of ~10 `{id, keys, description}`, author-ordered, combos/descriptions copied from the default bindings (F6, F7)
-  - Writer: OpenAI · GPT-5
-  - Check: `jq -e 'length >= 8 and length <= 12 and all(.[]; has("id") and has("keys") and has("description"))' keybindings.json` (pre: exit 2 — file missing)
+- [ ] Step 1 — Commit the top-right card anchoring in `KeyTrainer.qml` (F5)
+  - Check: `git show HEAD:KeyTrainer.qml | grep -o 'anchors.rightMargin: Style.gapsOut' | wc -l` (pre: 0 → expect 1) paired guard: `git diff --quiet -- KeyTrainer.qml; echo $?` (pre: 1 → expect 0)
   - Skills: none
-- [x] Step 2 — Scaffold `manifest.json` (id `oma-key-trainer`, name "Keybindings Trainer", version 0.1.0, homepage/repository = GitHub URL, `kinds: ["overlay"]`, `entryPoints.overlay: "KeyTrainer.qml"`, no `keepLoaded`) and the overlay lifecycle in `KeyTrainer.qml`: `opened`/`open()`/`close()`/`dismiss()`, injected `shell`/`manifest`/`omarchyPath`, fullscreen `PanelWindow` (Overlay layer, exclusive keyboard focus) with `Color.menu.scrim`, centered `BorderSurface` card, Escape and click-outside dismiss (F1, F2, F4, F9)
-  - Writer: OpenAI · GPT-5
-  - Check: `omarchy plugin validate . && grep -o 'function \(open\|close\|dismiss\)(' KeyTrainer.qml | wc -l` (pre: validate fails "missing manifest.json"; grep count 0 → expect exit 0 and 3)
+- [ ] Step 2 — Manual QA (R1–R3) on the bar-widget shape: click the bar icon → card opens top-right under it with all 10 pool rows; Escape and click-outside close it; `omarchy-shell shell toggle oma-key-trainer '{}'` opens and closes it (menu-row path); colors match the current theme; no `console.warn` mentioning `oma-key-trainer` in the shell output. Paste what was seen into this file's execution state (F3)
+  - Check: `omarchy-shell shell summon oma-key-trainer '{}'; omarchy-shell shell hide oma-key-trainer` (pre: `ok` / exit 0 — already runnable; the step's deliverable is the pasted observation, not a changed exit code)
   - Skills: none
-- [x] Step 3 — Render the list in `KeyTrainer.qml`: `FileView` loads `keybindings.json` via `Qt.resolvedUrl` into a `ListModel`; `PanelHero` title "Keybindings Trainer" + `PanelSeparator`; `ListView` rows = key combo (left, fixed width) + description (right, elided), one column, pool order; all colors/spacing from `Color.menu.*`/`Style` (F1, F6)
-  - Writer: OpenAI · GPT-5
-  - Check: `grep -o 'Qt.resolvedUrl("keybindings.json")\|PanelHero\|ListView' KeyTrainer.qml | sort | uniq -c` (pre: no output → expect each ≥ 1) paired guard: `grep -o '#[0-9a-fA-F]\{6\}' KeyTrainer.qml | wc -l` (pre: 0 → stays 0)
+- [ ] Step 3 — Publish: `gh auth setup-git && git branch -m master main && git checkout main && git merge --ff-only fix/top-right-trainer-widget && git branch -d fix/top-right-trainer-widget && git remote add origin https://github.com/johnviklund/oma-key-trainer.git && git push -u origin main` (F6)
+  - Check: `git rev-parse --abbrev-ref HEAD; git ls-remote --heads https://github.com/johnviklund/oma-key-trainer.git main | wc -l` (pre: `fix/top-right-trainer-widget` / 0 → expect `main` / 1)
   - Skills: none
-- [x] Step 4 — Install for QA: `ln -sfn "$PWD" ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins && omarchy plugin enable oma-key-trainer` (F3)
-  - Writer: OpenAI · GPT-5
-  - Check: `omarchy-shell shell listPlugins | jq -e '.[] | select(.id=="oma-key-trainer") | .enabled'` (pre: exit 4 — not discovered → expect `true`)
-  - Skills: none
-- [x] Step 5 — Menu row: add `"learn.keybindings-trainer": {"icon":"󰧑","label":"Keybindings Trainer","action":"omarchy-shell shell toggle oma-key-trainer '{}'"}` to `~/.config/omarchy/extensions/omarchy-menu.jsonc`; add an "Install" section to `README.md` with `omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable` plus that exact snippet (F5)
-  - Writer: OpenAI · GPT-5
-  - Check: `grep -o '"learn.keybindings-trainer"' ~/.config/omarchy/extensions/omarchy-menu.jsonc | wc -l; grep -o 'learn.keybindings-trainer' README.md | wc -l` (pre: 0 / 0 → expect 1 / ≥ 1)
-  - Skills: /home/johnviklund/.claude/skills/omarchy/SKILL.md
-- [ ] Step 6 — Manual QA (R1–R3): from the top-right menu, Learn → Keybindings Trainer opens the box with all pool rows; Escape and click-outside close it; theme colors match the menu; no `console.warn` for `oma-key-trainer` in the shell output. Paste what was seen (F8)
-  - Check: `omarchy-shell shell summon oma-key-trainer '{}'; omarchy-shell shell hide oma-key-trainer` (pre: `unknown` → expect `ok`)
+- [ ] Step 4 — Rename the local folder and re-point the dev symlink, last: `mv ~/Work/plugin-keys-helper ~/Work/oma-key-trainer && ln -sfn ~/Work/oma-key-trainer ~/.config/omarchy/plugins/oma-key-trainer && omarchy-shell shell rescanPlugins` — then reopen the session in `~/Work/oma-key-trainer` (F7)
+  - Check: `readlink -f ~/.config/omarchy/plugins/oma-key-trainer; omarchy-shell shell listPlugins | jq -e '.[] | select(.id=="oma-key-trainer") | .enabled'` (pre: `/home/johnviklund/Work/plugin-keys-helper` / `true` → expect `/home/johnviklund/Work/oma-key-trainer` / `true`)
   - Skills: none
 
 ## Coverage
 
-- Scaffold plugin folder (manifest, menu entry, overlay QML), loading via `omarchy plugin enable` → Steps 2, 4, 5
-- Author the initial curated ~10 as static content → Step 1
-- Render the box with `qs.Ui`/`qs.Commons` per DESIGN.md; wire the menu entry (R1–R3) → Steps 3, 5, 6
+- Scaffold plugin folder (manifest, menu entry, overlay QML), loading via `omarchy plugin enable` → shipped in the previous plan (F1); entry point is now a bar widget + optional menu row (decision 1a) → Steps 2, 3
+- Author the initial curated ~10 as static content → shipped (F1), verified in Step 2
+- Render the box with `qs.Ui`/`qs.Commons` per DESIGN.md; wire the menu entry (R1–R3) → Steps 1, 2
+- Distribution (id `oma-key-trainer`, GitHub repo, folder name — brainstorm open question) → Steps 3, 4
 - Non-goal: usage tracking / counters / persistence / rotation → untouched
 - Non-goal: `learn.keybindings` entry and `omarchy-menu-keybindings` script → untouched
 - Non-goal: the two v2 counter-display questions in TODO.md → untouched
 
 ## Risks
 
-- Riskiest: Step 3 — the first QML in the repo with no lint/test harness; a binding typo only shows as a blank card at runtime, so Step 6's visual walk is the real gate.
-- Outside its files: Step 5 edits user config (`~/.config/omarchy/extensions/omarchy-menu.jsonc`), hot-reloaded by the live menu; a JSONC syntax slip can break the whole menu until reverted.
-- Not taken: `kind: "panel"` on the `qs.Ui/Panel` base — it is bar-anchored and needs a `bar`; the menu-summoned centered card is the overlay pattern (F1).
-
-## Deviations
-
-- Step 4 initially stopped because the shell control plane was not running. After the user restarted it, the planned rescan and enable command passed; no workspace code was changed.
+- Riskiest: Step 3 — first push to an empty public repo with branch rename; `--ff-only` and `branch -d` refuse rather than lose history, but a failed `gh auth setup-git` leaves a half-done local rename with no remote — finish the branch steps, then retry the push.
+- Outside its files: Step 4 breaks this session's cwd and any other symlink or shell pointing at `plugin-keys-helper`; the menu row depends on the icon staying in the bar layout (F3) — removing the icon via bar settings silently kills the row.
+- Not taken: declaring both `overlay` and `bar-widget` kinds so the menu row works without the icon — extra shell wiring for a row that is optional by decision 1a.
 
 ## TODO impacts
 
@@ -87,7 +61,7 @@ Decided with the human (2026-09-13): plugin id `oma-key-trainer`; distribution r
 
 ## Product doc impacts
 
-- `PRODUCT.md` — resolves "Plugin id / distribution name — not yet chosen": id `oma-key-trainer`, repo `https://github.com/johnviklund/oma-key-trainer`; "Current: not yet built" becomes v1 scaffolded once Step 6 passes. Not ESCALATE.
-- `DESIGN.md` — "Build the box from … `Panel`, …" is stale for an overlay (F1): replace with "`PanelWindow` + `BorderSurface` card, using `PanelHero`/`PanelSectionHeader`/`PanelSeparator` inside it, themed by `Color.menu.*`". Principle "conform, don't invent" unchanged. Not ESCALATE.
-- `ROADMAP.md` — Phase 1's three items check off at wrap; no wording change.
-- `AGENTS.md` — "walk AE1–AE4 by hand" covers v2 only (F8); wrap should scope it "AE1–AE4 for v2; R1–R3 for v1".
+- `PRODUCT.md` — "Current: not yet built" → v1 built (bar icon + card, curated 10, published at `https://github.com/johnviklund/oma-key-trainer`); "v1 … reachable from Omarchy's existing top-right menu" → "reachable from a top-right bar icon (and, optionally, a user-added menu row)"; open decision "Plugin id / distribution name — not yet chosen" → resolved: `oma-key-trainer`. Not ESCALATE (decision 1a taken by the human).
+- `DESIGN.md` — "Build the box from … `Panel`, …" → "`PanelWindow` + `BorderSurface` card with `PanelHero`/`PanelSeparator`, themed by `Color.menu.*`"; "summoned from a menu action, dismissed the same way" → "toggled from its bar icon (or `omarchy-shell shell toggle`), dismissed by Escape / click-outside". Not ESCALATE.
+- `ROADMAP.md` — Phase 1's three items check off at wrap; the first item's "menu entry, overlay QML" wording → "bar widget + card QML".
+- `AGENTS.md` — "walk AE1–AE4 by hand" covers v2 only; wrap scopes it "AE1–AE4 for v2; R1–R3 for v1".
