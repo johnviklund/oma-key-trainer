@@ -24,6 +24,20 @@ omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable
 
 The trainer icon is added to the right side of the bar, immediately after the system tray.
 
+To enable background usage tracking, add this line to `~/.config/hypr/hyprland.lua` immediately
+before `require("default.hypr.omarchy")`:
+
+```lua
+require("default.hypr.require_optional").module("omarchy.plugins.oma-key-trainer.hook")
+```
+
+Reload Hyprland after adding it:
+
+```sh
+hyprctl reload
+hyprctl configerrors
+```
+
 Add this row to `~/.config/omarchy/extensions/omarchy-menu.jsonc` to make the
 trainer available from the main menu's Learn submenu as well:
 
