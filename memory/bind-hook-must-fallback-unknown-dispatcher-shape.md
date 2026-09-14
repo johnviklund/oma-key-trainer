@@ -1,0 +1,6 @@
+# A hook wrapping every Omarchy `o.bind` must fall back to stock `o.bind` for a dispatcher shape it doesn't recognise
+Applies when: writing or reviewing `hook.lua`-style code that intercepts `o.bind` registrations and needs to resolve/replay the dispatcher (any code that re-implements or copies Omarchy's `command_from` table-shape matching from `default/hypr/helpers.lua`).
+Root cause: wrapping every Lua-config bind is safe in Hyprland 0.56 — every one is already a `__lua` bind, flags travel in `opts`, `hl.dsp.*` objects run via `hl.dispatch`, and mouse drag works through `releasePending` on `m_currentKeybind` — but `command_from`'s five table shapes are not exhaustive forever (Omarchy has added shapes like `{ tui = }` / `{ webapp = , focus = }`). An unmatched shape returned as-is and handed to `hl.dispatch` breaks that bind at press time with no error attributing it to the hook.
+Fix: if the shape resolver returns neither a function nor userdata, call the original `o.bind(keys, description, dispatcher, options)` unwrapped (untracked, but stock behaviour) instead of forcing it through the wrapped dispatch path.
+Evidence: usage-tracking-v2
+Occurrences: 1 · Last confirmed: 2026-09-14 · Status: active
