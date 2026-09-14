@@ -2,16 +2,7 @@ Command: workflow plan usage-tracking-v2 (re-audit of Step 8: stale-log check + 
 Created: 2026-09-13
 Base: 3afd4a490a34c8971ae46da1c23e0ca9f871a303
 Inputs: .workflow/usage-tracking-v2/brainstorm.md @ fda38938f1c4c656f458b12c010de195c396a483, .workflow/usage-tracking-v2/spec.md @ fda38938f1c4c656f458b12c010de195c396a483
-Status: complete
-
-## Execution state
-
-- Current: Steps 1–10 done; ready for Phase 4 review
-- Writer: OpenAI · GPT-5 (self-declared, Steps 1–10)
-- Baseline: validate exit 0; Step 8 model check `l a b d e f g h i j c k 12`; Step 9 real-key check `{"pool":32,"visible":11,"complete":1,"allLearned":false}`, count ≥11, live-log matches 0; Step 10 all-learned check `1`
-- In flight: `parseCounts(raw)`, `visibleEntries(pool, counts, threshold, windowSize)`, `allLearned(rows)`; counts contract v1; threshold 10; window 10
-- Step commits: Step 1 @ 2ee15bb; Step 2 @ 88d56fc; Step 3 @ 20a2fea; Step 4 @ e73efa8; Step 5 @ a9eff63; Step 6 @ 796a546; Step 7 @ a7f8a32; Step 8 @ 985f702; Step 9 @ 9c69ee7; Step 10 @ 2aa4e1d
-- Pending decision: none; original counts restored from `/tmp/oma-key-trainer-counts-step9-backup.json` (decision 4a: 10-row window, pulled entries inserted at the top)
+Status: done
 
 ## Findings
 

@@ -2,7 +2,7 @@ Command: workflow brainstorm usage-tracking-v2
 Created: 2026-09-13
 Base: fda38938f1c4c656f458b12c010de195c396a483
 Inputs: none
-Status: complete
+Status: done
 
 ## Problem statement
 

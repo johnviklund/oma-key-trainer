@@ -2,7 +2,7 @@ Command: workflow review usage-tracking-v2
 Created: 2026-09-13
 Base: aa3eed535687c441601f28e1a78f7a6c0e2cd314
 Inputs: .workflow/usage-tracking-v2/plan.md @ 3afd4a490a34c8971ae46da1c23e0ca9f871a303
-Status: complete
+Status: done
 
 Cycle 1 reviewed diff: `fda38938..e36b0e48`; cycle 2 reviews `e36b0e48..aa3eed53` (patch cycle 1 fixes only). Cycle 1 reviewed the whole run — Steps 1–7 were committed before the re-plan
 at `3afd4a4`; the plan's own Base only covers Step 8). Code files: `hook.lua`, `keybindings.json`,

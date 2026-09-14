@@ -2,7 +2,7 @@ Command: workflow review usage-tracking-v2 (opened at review; wrap routes the li
 Created: 2026-09-13
 Base: e36b0e484201162e549e3f05ab842a3f9ed3b4ec
 Inputs: review.md @ e36b0e484201162e549e3f05ab842a3f9ed3b4ec
-Status: drafting
+Status: done
 
 ## Phase 4 — Review (2026-09-13)
 - [durable→memory] A `try/catch` around a config/data load that only resets state (`poolEntries = []`) leaves an empty card with no trace — second occurrence in this repo (plugin-scaffold-v1 review C1-2 → TODO; usage-tracking-v2 `UsageService.qml` `loadPool`, review C1-3). Rule: every swallowed load/parse error in this plugin logs one `console.warn("oma-key-trainer: …")`, and a plan promise like "the warning moves into Step N" must appear in that step's check or it silently drops. [routed → memory/swallowed-load-error-hides-empty-state.md 2026-09-14]
