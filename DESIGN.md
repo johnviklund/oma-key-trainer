@@ -21,10 +21,9 @@ menu entries).
 
 - **v1:** one panel, one column. Each row = key combo + short description, in curated pool
   order, using the kit's existing row-list conventions.
-- **v2 adds:** a usage counter per row, and a visual treatment for rows that have moved to the
-  bottom as complete. Whether the counter keeps counting past 10 or switches to a fixed
-  "Complete" badge is an open product decision (see `PRODUCT.md`) — resolve it during Planning,
-  then record the answer here.
+- **v2 adds:** a usage counter per row (`n/10`, live), and a dimmed row plus a fixed "Complete"
+  marker for rows that have moved to the bottom as complete (decided 2026-09-13,
+  `usage-tracking-v2`) — no running-total-past-10 display.
 - **All-learned state:** a single terminal message in place of the row list once the whole
   curated pool is complete (R11) — exact copy is content curation, not a structural decision.
 

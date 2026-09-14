@@ -13,13 +13,13 @@ Sequencing only — see `PRODUCT.md` for what/why. Each item is sized to one fut
 
 ## Phase 2 — v2 usage tracking
 
-- [ ] Pick and validate a background event source for Hyprland action-level usage (matches R7:
-  action, not literal key).
-- [ ] Persist per-binding counts and rotation position across reboots (R12).
-- [ ] Wire completion at 10 uses, rotation, and all-learned state (R8, R9, R11).
-- [ ] Author the larger curated pool beyond the initial ~10, in author-fixed order (R9).
+- [x] Pick and validate a background event source for Hyprland action-level usage (matches R7:
+  action, not literal key). (usage-tracking-v2)
+- [x] Persist per-binding counts and rotation position across reboots (R12). (usage-tracking-v2)
+- [x] Wire completion at 10 uses, rotation, and all-learned state (R8, R9, R11). (usage-tracking-v2)
+- [x] Author the larger curated pool beyond the initial ~10, in author-fixed order (R9). (usage-tracking-v2)
 
 ## Later / not yet sequenced
 
-- `PRODUCT.md`'s open product decisions get resolved during whichever phase-2 planning run first
-  needs them, not before.
+- (none — `PRODUCT.md`'s open product decisions were resolved during `usage-tracking-v2`; only
+  pool-content curation remains open, tracked there directly)

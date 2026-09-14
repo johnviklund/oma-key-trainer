@@ -55,8 +55,10 @@ multi-user concept in v1 or v2.
 - Background usage counting that survives the box being closed (R5) implies a `service`-kind
   plugin, the pattern `omarchy.idle`, `omarchy.battery`, and `omarchy.nightlight` already use for
   always-on background state, rather than logic that only runs while the overlay is mounted. The
-  exact event source (e.g. a Hyprland IPC/dispatch stream) is a Planning-phase decision, not
-  settled here.
+  event source is Omarchy's `o.bind` Lua registration hook (decided 2026-09-13, `usage-tracking-v2`):
+  a `hook.lua` the user opts into with one line in `~/.config/hypr/hyprland.lua` (before
+  `default.hypr.omarchy`) wraps every bind registration and counts on fire. This is a real install
+  step for the core v2 feature, not just a nice-to-have.
 - User-installed plugins live at `~/.config/omarchy/plugins/<plugin-id>/`. This repo is that
   plugin's source — installable via
   `omarchy plugin add https://github.com/johnviklund/oma-key-trainer.git --enable`, or via a
@@ -66,10 +68,12 @@ multi-user concept in v1 or v2.
 
 - **Curated pool** — the full, author-ordered list of keybindings the plugin knows about, larger
   than the visible list. Fixed order; never randomized; never user-editable (deferred).
-- **Visible list** — the ~10-row window into the pool shown in the box: not-yet-complete bindings
-  in pool order, plus completed ones at the bottom.
+- **Visible list** — the 10-row window into the pool shown in the box: newly-pulled incomplete
+  rows stack at the top (most-recently-pulled first), the initial rows keep pool order, and
+  completed rows sit at the bottom in pool order.
 - **Binding entry** — one pool item: default key combo (display only), description, the
-  underlying Hyprland action it's matched against, usage count, complete/not-complete state.
+  underlying Hyprland action it's matched against (the bind's Omarchy description string — the
+  only stable per-bind identity Hyprland exposes), usage count, complete/not-complete state.
 - **Usage count** — increments on every real trigger of a binding entry's *action* (not its
   literal key), regardless of the user's own rebinding, regardless of whether the box is open.
 - **Completion** — automatic at 10 uses; never manual. Triggers rotation.
@@ -105,11 +109,13 @@ see Core objects above. "v1"/"v2" name milestones of one product, not separate p
 
 ## Open product decisions
 
-- Live-updating counter while the box is open, vs. a snapshot as of when the box was last opened
-  — deferred to Planning.
-- Whether a completed row keeps showing its running total past 10, or switches to a fixed
-  "Complete" indicator — deferred to Planning.
-- Exact content of the curated ~10 and the larger pool (which bindings, descriptions, priority
+- Exact content of the curated pool beyond the shipped 32 (which bindings, descriptions, priority
   order) — content curation, authored during implementation.
 - ~~Plugin id / distribution name~~ — decided 2026-09-13: `oma-key-trainer` (folder, manifest id,
   GitHub repo name all match).
+- ~~Live-updating counter while the box is open, vs. a snapshot~~ — decided 2026-09-13
+  (`usage-tracking-v2`): live — `refresh()` re-reads on open and a state-dir watch updates while
+  open.
+- ~~Whether a completed row keeps showing its running total past 10, or switches to a fixed
+  indicator~~ — decided 2026-09-13 (`usage-tracking-v2`): a fixed "Complete" marker.
+- ~~Exact background event source~~ — decided 2026-09-13 (`usage-tracking-v2`): see Platform facts.

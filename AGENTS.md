@@ -44,8 +44,10 @@ wrong — fix the doc, don't duplicate the sentence.
   acceptance examples AE1–AE4 for v2 in `docs/archive/PRD-2026-09-13.md` by hand.
 - **Lint:** TODO — no `qmllint` or equivalent is installed on this machine; revisit if one
   becomes available.
-- **Shell log:** the running shell's stderr is at `/run/user/$(id -u)/quickshell/by-id/*/log.log`
-  (no journald unit). "No warning mentioning `<plugin-id>`" means `grep -i <plugin-id>` on that file
-  is empty after exercising the plugin.
+- **Shell log:** the running shell's stderr is at `/run/user/$(id -u)/quickshell/by-pid/$(pgrep -xo quickshell)/log.log`
+  (`by-id/*` also exists but keeps dead instances around after a restart — prefer `by-pid`). It is
+  also mirrored to the journal under tag `omarchy-shell` (`journalctl --user -t omarchy-shell`).
+  "No warning mentioning `<plugin-id>`" means `grep -i <plugin-id>` on the by-pid log is empty
+  after exercising the plugin.
 - Run whatever of the above applies before reporting any step done, and paste the result.
 - A failing test is fixed in the code, never by editing or deleting the test.
